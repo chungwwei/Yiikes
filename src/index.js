@@ -1,15 +1,23 @@
 import Phaser from "phaser";
 import logoImg from "./assets/logo.png";
+import { Level1 } from "./level_one";
+
 
 const config = {
   type: Phaser.AUTO,
   parent: "phaser-example",
-  width: 800,
-  height: 600,
-  scene: {
-    preload: preload,
-    create: create
-  }
+  width: 960,
+  height: 960,
+  physics: {
+    default: 'arcade',
+    arcade: {
+        gravity: { y: 0},
+        debug: true
+    }
+  },
+  // scene: [MenuScene, ControlScene, Level1]
+  scene: [Level1]
+
 };
 
 const game = new Phaser.Game(config);
