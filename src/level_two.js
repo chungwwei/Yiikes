@@ -1,14 +1,16 @@
 import Phaser from "phaser";
 import tilesImg from "./assets/yiikes_tiles.png"
 import gearImg from "./assets/gear.png"
-import level_1_JSON from "./assets/level1.json";
+import blueCircle from "./assets/blue_circle.png"
+import level_2_JSON from "./assets/level2.json";
 import { Player } from "./player";
+import blue_circle from './assets/blue_circle.png';
 
 
-export class Level1 extends Phaser.Scene {
+export class Level2 extends Phaser.Scene {
     
     constructor() {
-        super('level1')
+        super('level2')
         this.player = null
         this.spacebar = null
         this.bullet = null
@@ -17,8 +19,9 @@ export class Level1 extends Phaser.Scene {
     preload() {
         console.log('loading')
         this.load.image('tiles', tilesImg)
-        this.load.image("gearImg", gearImg)
-        this.load.tilemapTiledJSON('map', level_1_JSON)
+        this.load.image('gear', gearImg)
+        this.load.image('blue_circle', blueCircle)
+        this.load.tilemapTiledJSON('map', level_2_JSON)
     }
 
     create() {
@@ -80,8 +83,23 @@ export class Level1 extends Phaser.Scene {
         this.pointsGroup = this.physics.add.group({
             allowGravity: false,
         })
+
+        this.imaginaryWall = this.physics.add.group({
+            allowGravity: false,
+            immovable: true
+        })
+        const imaginaryWallsObjs = map.getObjectLayer('imaginary_walls')['objects']
+        for (let i = 0; i < imaginaryWallsObjs.length; i ++) {
+            let x = imaginaryWallsObjs[i].x
+            let y = imaginaryWallsObjs[i].y
+            let width = imaginaryWallsObjs[i].width
+            let height= imaginaryWallsObjs[i].height
+            let wall = this.add.rectangle(x + width / 2, y + height / 2, width, height)
+            this.imaginaryWall.add(wall)
+            wall.setAlpha(0)
+        }
         
-        const points = map.getObjectLayer('patrol_points')['objects']
+        const points = map.getObjectLayer('patrol_points_y')['objects']
 
         for (let i = 0; i <points.length; i ++) {
             let point = points[i]
@@ -94,6 +112,7 @@ export class Level1 extends Phaser.Scene {
             var r = this.add.rectangle(p.x - 8, p.y - 8, 16, 16, '0x1fffff')
             this.physics.add.existing(r)
             this.speed = -150
+ 
             r.body.setVelocityY(this.speed)
             
             // this.physics.add.collider(r, this.foregroundLayer)
@@ -106,19 +125,42 @@ export class Level1 extends Phaser.Scene {
                 this.player.body.x = this.startpoint.x
                 this.player.body.y = this.startpoint.y
             })   
+
+            this.physics.add.collider(r, this.imaginaryWall,(r) => {
+                this.speed *= -1
+                r.body.setVelocityY(this.speed)
+            })
         }
 
-        this.rectangle = this.add.image(400, 300, "gearImg")
-        this.physics.add.existing(this.rectangle)
-        this.rectangle.body.setCircle(93)
-        
-        this.physics.add.overlap(this.rectangle, this.player, () => {
-            this.player.body.x = this.startpoint.x
-            this.player.body.y = this.startpoint.y
-        })
+        const x_points = map.getObjectLayer('patrol_points_x')['objects']
 
-        this.rectangle.body.debugShowBody = true;
-        this.rectangle.body.angle = 1
+        for (let i = 0; i < x_points.length; i ++) {
+            let point = x_points[i]
+            const p = this.pointsGroup.create(
+                point.x,
+                point.y,
+            )
+            p.setAlpha(0) // make it invisible
+
+            var r = this.add.rectangle(p.x - 8, p.y - 8, 16, 16, '0x1fffff')
+            this.physics.add.existing(r)
+            this.speed = -150
+            r.body.setVelocityX(this.speed)
+            this.physics.add.collider(r, this.foregroundLayer, (r) => {
+                this.speed *= -1
+                r.body.setVelocityX(this.speed)
+            })
+
+            this.physics.add.overlap(r, this.player, () => {
+                this.player.body.x = this.startpoint.x
+                this.player.body.y = this.startpoint.y
+            })   
+
+            this.physics.add.collider(r, this.imaginaryWall,(r) => {
+                this.speed *= -1
+                r.body.setVelocityX(this.speed)
+            })
+        }
         
         const debugGraphics = this.add.graphics().setAlpha(0.75);
 
@@ -128,6 +170,22 @@ export class Level1 extends Phaser.Scene {
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
         });
+
+        
+        var circlePath = new Phaser.Curves.Path(400, 500).circleTo(50);
+        var ball1 = this.add.follower(circlePath, 750, 400, 'blue_circle');
+
+        this.physics.world.enable(ball1)
+        ball1.body.setCircle(32)
+        ball1.startFollow({
+            repeat: 100000,
+            duration: 3000,
+        });
+
+        this.physics.add.overlap(ball1, this.player, () => {
+            this.player.body.x = this.startpoint.x
+            this.player.body.y = this.startpoint.y
+        })
 
     }
 
@@ -150,10 +208,5 @@ export class Level1 extends Phaser.Scene {
             this.player.update()
         }
 
-
-        // fanImage rotation
-        this.rectangle.angle += 1
-        this.rectangle.body.angle += 30
-        // this.polygon.angle += 1
     }
 }
