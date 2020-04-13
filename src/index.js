@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import logoImg from "./assets/logo.png";
 import { Level1 } from "./level_one";
 import { Level2 } from "./level_two";
+import { Level3 } from "./level_three";
 
 
 const config = {
@@ -17,7 +18,7 @@ const config = {
     }
   },
   // scene: [MenuScene, ControlScene, Level1]
-  scene: [Level2],
+  scene: [Level3],
 };
 
 const game = new Phaser.Game(config);
