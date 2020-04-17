@@ -3,6 +3,7 @@ import logoImg from "./assets/logo.png";
 import { Level1 } from "./level_one";
 import { Level2 } from "./level_two";
 import { Level3 } from "./level_three";
+import { LevelSelectScene } from "./level_select";
 
 
 const config = {
@@ -18,10 +19,15 @@ const config = {
     }
   },
   // scene: [MenuScene, ControlScene, Level1]
-  scene: [Level3],
+  scene: [LevelSelectScene, Level1, Level2, Level3],
 };
 
-const game = new Phaser.Game(config);
+export const game = new Phaser.Game(config);
+export var gameState = {
+  levelCompleteion: [true, false, false, 
+                      false, false, false,
+                      false, false, false]
+}
 
 function preload() {
   this.load.image("logo", logoImg);
