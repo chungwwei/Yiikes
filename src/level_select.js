@@ -33,9 +33,9 @@ export class LevelSelectScene extends Phaser.Scene {
             if (i % 3 === 0) x = 250
             else if (i % 3 === 1) x = 350
             else if (i % 3 === 2) x = 450
-            
+
             var img
-            if (gameState.levelCompleteion[i] === false)
+            if (gameState.levelCompletion[i] === false)
                 img = this.add.image(x, y, 'lock')
             else
                 img = this.add.image(x, y, 'unlock')

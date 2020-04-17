@@ -4,6 +4,7 @@ import { Level1 } from "./level_one";
 import { Level2 } from "./level_two";
 import { Level3 } from "./level_three";
 import { LevelSelectScene } from "./level_select";
+import { MainScene } from "./main_screen";
 
 
 const config = {
@@ -19,12 +20,12 @@ const config = {
     }
   },
   // scene: [MenuScene, ControlScene, Level1]
-  scene: [LevelSelectScene, Level1, Level2, Level3],
+  scene: [MainScene, LevelSelectScene, Level1, Level2, Level3],
 };
 
 export const game = new Phaser.Game(config);
 export var gameState = {
-  levelCompleteion: [true, false, false, 
+  levelCompletion: [true, false, false, 
                       false, false, false,
                       false, false, false]
 }
