@@ -7,6 +7,7 @@ import { Level4 } from "./level_four";
 import { Level5 } from "./level_five";
 import { Level6 } from "./level_six";
 import { LevelSelectScene } from "./level_select";
+import { ControlScene } from "./control_screen";
 import { MainScene } from "./main_screen";
 
 
@@ -23,7 +24,7 @@ const config = {
     }
   },
   // scene: [MenuScene, ControlScene, Level1]
-  scene: [MainScene, LevelSelectScene, Level1, Level2, Level3, Level4, Level5, Level6],
+  scene: [MainScene, LevelSelectScene, ControlScene, Level1, Level2, Level3, Level4, Level5, Level6],
 };
 
 export const game = new Phaser.Game(config);
