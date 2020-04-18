@@ -170,16 +170,15 @@ export class Level6 extends Phaser.Scene {
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
         });
 
-        const cO = map.getObjectLayer('circular')['objects']
         var circlePath_1 = new Phaser.Curves.Path(100, 300).circleTo(90)
         var circlePath_2 = new Phaser.Curves.Path(400, 800).circleTo(100)
         var circlePath_3 = new Phaser.Curves.Path(400, 800).circleTo(100)
         var circlePath_4 = new Phaser.Curves.Path(400, 800).circleTo(100)
 
-        var ball1 = this.add.follower(circlePath_1, 190, 300, 'blue_circle');
-        var ball2 = this.add.follower(circlePath_2, 750, 500, 'blue_circle')
-        var ball3 = this.add.follower(circlePath_3, 550, 500, 'blue_circle');
-        var ball4 = this.add.follower(circlePath_4, 350, 500, 'blue_circle');
+        var ball1 = this.add.follower(circlePath_1, 190, 425, 'blue_circle');
+        var ball2 = this.add.follower(circlePath_2, 750, 625, 'blue_circle')
+        var ball3 = this.add.follower(circlePath_3, 550, 625, 'blue_circle');
+        var ball4 = this.add.follower(circlePath_4, 350, 625, 'blue_circle');
 
 
         this.physics.world.enable(ball1)
@@ -226,7 +225,36 @@ export class Level6 extends Phaser.Scene {
             this.player.body.x = this.startpoint.x
             this.player.body.y = this.startpoint.y
         })
-        
+        this.waterPath = this.physics.add.group({
+            immovable: true
+        })
+        const water_down = map.getObjectLayer('water_down')['objects']
+        for (let i = 0; i < water_down.length; i ++) {
+            let x = water_down[i].x
+            let y = water_down[i].y
+            let width = water_down[i].width
+            let height= water_down[i].height
+            let path = this.add.rectangle(x + width / 2, y + height / 2, width, height)
+            this.waterPath.add(path)
+            path.setAlpha(0)
+            this.physics.add.overlap(path, this.player, () => {
+                this.player.y += 1
+            })
+        }
+        const water_right = map.getObjectLayer('water_right')['objects']
+        for (let i = 0; i < water_right.length; i ++) {
+            let x = water_right[i].x
+            let y = water_right[i].y
+            let width = water_right[i].width
+            let height= water_right[i].height
+            let path = this.add.rectangle(x + width / 2, y + height / 2, width, height)
+            this.waterPath.add(path)
+            path.setAlpha(0)
+            this.physics.add.overlap(path, this.player, () => {
+                this.player.x += 1
+            })
+        }
+
         this.btHome  = this.add.image(100, 100, 'home')
 
         this.btHome.setInteractive()
