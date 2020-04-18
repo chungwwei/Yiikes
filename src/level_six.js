@@ -3,7 +3,8 @@ import tilesImg from "./assets/yiikes_tiles.png"
 import blueCircle from './assets/blue_circle.png';
 import level_6_JSON from "./assets/level6.json";
 import { Player } from "./player";
-import homeImg from "./assets/home_black_48x48.png"
+import { gameState } from ".";
+import homeImg from "./assets/home_black_48x48.png";
 
 
 export class Level6 extends Phaser.Scene {
