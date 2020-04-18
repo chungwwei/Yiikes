@@ -40,8 +40,8 @@ export class Player extends Phaser.GameObjects.Rectangle {
 
     blink() {
         if (this.bullet !== null) {
-            this.x = this.bullet.body.x
-            this.y = this.bullet.body.y
+            this.x = this.bullet.body.x + 10
+            this.y = this.bullet.body.y + 10
             this.bullet.destroy()
             this.bullet = null
             this.fireCoolDown = -1
