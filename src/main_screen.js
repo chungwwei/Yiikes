@@ -66,7 +66,7 @@ export class MainScene extends Phaser.Scene {
         })
 
         this.btHelp.on('pointerdown', () => {
-
+            this.scene.start('help_scene')
         })
 
         this.btExit.on('pointerdown', () => {
