@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import tilesImg from "./assets/yiikes_tiles.png"
-import gearImg from "./assets/gear.png"
 import level_1_JSON from "./assets/level1.json";
 import { Player } from "./player";
 
@@ -17,7 +16,6 @@ export class Level1 extends Phaser.Scene {
     preload() {
         console.log('loading')
         this.load.image('tiles', tilesImg)
-        this.load.image("gearImg", gearImg)
         this.load.tilemapTiledJSON('map', level_1_JSON)
     }
 
@@ -34,7 +32,9 @@ export class Level1 extends Phaser.Scene {
         const pointB = start_end_points[1]
         
         this.startpoint = this.add.rectangle(pointA.x, pointA.y, pointA.width, pointA.height)
-        this.endpoint = this.add.rectangle(pointB.x, pointB.y, pointB.width, pointB.height)
+        this.endpoint = this.add.rectangle(pointB.x, pointB.y, pointB.width, pointB.height, '0xff0000')
+        this.endpoint.setOrigin(0)
+        this.physics.add.existing(this.endpoint)
 
         this.player = new Player(this, this.startpoint.x, this.startpoint.y, 
                                     25, 25, this.foregroundLayer)
@@ -79,6 +79,7 @@ export class Level1 extends Phaser.Scene {
 
         this.pointsGroup = this.physics.add.group({
             allowGravity: false,
+            immovable: true
         })
         
         const points = map.getObjectLayer('patrol_points')['objects']
@@ -93,6 +94,7 @@ export class Level1 extends Phaser.Scene {
 
             var r = this.add.rectangle(p.x - 8, p.y - 8, 16, 16, '0x1fffff')
             this.physics.add.existing(r)
+            r.body.immovable = true
             this.speed = -150
             r.body.setVelocityY(this.speed)
             
@@ -102,33 +104,11 @@ export class Level1 extends Phaser.Scene {
                 r.body.setVelocityY(this.speed)
             })
 
-            this.physics.add.overlap(r, this.player, () => {
+            this.physics.add.collider(r, this.player, () => {
                 this.player.body.x = this.startpoint.x
                 this.player.body.y = this.startpoint.y
             })   
         }
-
-        this.rectangle = this.add.image(400, 300, "gearImg")
-        this.physics.add.existing(this.rectangle)
-        this.rectangle.body.setCircle(93)
-        
-        this.physics.add.overlap(this.rectangle, this.player, () => {
-            this.player.body.x = this.startpoint.x
-            this.player.body.y = this.startpoint.y
-        })
-
-        this.rectangle.body.debugShowBody = true;
-        this.rectangle.body.angle = 1
-        
-        const debugGraphics = this.add.graphics().setAlpha(0.75);
-
-        this.player.body.debugShowBody = true
-        this.foregroundLayer.renderDebug(debugGraphics, {
-            tileColor: null, // Color of non-colliding tiles
-            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-        });
-
     }
 
 
@@ -149,11 +129,15 @@ export class Level1 extends Phaser.Scene {
         } else {
             this.player.update()
         }
+        
 
+        if (Phaser.Geom.Rectangle.ContainsRect(this.player, this.endpoint)) {
+            console.log("reach end")
+        }
 
         // fanImage rotation
-        this.rectangle.angle += 1
-        this.rectangle.body.angle += 30
+        // this.rectangle.angle += 1
+        // this.rectangle.body.angle += 30
         // this.polygon.angle += 1
     }
 }

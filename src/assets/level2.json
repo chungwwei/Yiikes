@@ -229,30 +229,19 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":128,
-                 "x":272,
+                 "width":400,
+                 "x":160,
                  "y":288
                 }, 
                 {
-                 "height":32,
+                 "height":48,
                  "id":19,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":176,
-                 "x":128,
-                 "y":496
-                }, 
-                {
-                 "height":48,
-                 "id":20,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":160,
-                 "x":352,
+                 "width":400,
+                 "x":160,
                  "y":496
                 }, 
                 {

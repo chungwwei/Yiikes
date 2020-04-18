@@ -57,17 +57,12 @@ export class Level3 extends Phaser.Scene {
         })
 
         this.physics.add.collider(this.player, this.laserLayer, () => {
-            this.player.body.x = 176
-            this.player.body.y = 272
+            this.player.body.x = this.startpoint.x
+            this.player.body.y = this.startpoint.y
         })
 
         this.player.setInteractive()
         this.cursors = this.input.keyboard.createCursorKeys()
-
-        // follow player
-        // this.cameras.main.setBounds(0, 0, 500, 450)
-        // this.cameras.main.startFollow(this.player)
-        // this.cameras.main.zoomTo(1.3)
 
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
 
@@ -90,12 +85,20 @@ export class Level3 extends Phaser.Scene {
 
         var ball1 = this.add.follower(circlePath_1, 700, 500, 'blue_circle');
         var ball2 = this.add.follower(circlePath_2, 450, 600, 'blue_circle')
-        var ball3 = this.add.follower(circlePath_1, 500, 350, 'blue_circle');
-        var ball4 = this.add.follower(circlePath_1, 400, 300, 'blue_circle');
+        var ball3 = this.add.follower(circlePath_3, 500, 350, 'blue_circle');
+        var ball4 = this.add.follower(circlePath_4, 400, 300, 'blue_circle');
 
 
         this.physics.world.enable(ball1)
+        this.physics.world.enable(ball2)
+        this.physics.world.enable(ball3)
+        this.physics.world.enable(ball4)
+
         ball1.body.setCircle(32)
+        ball2.body.setCircle(32)
+        ball3.body.setCircle(32)
+        ball4.body.setCircle(32)
+
         ball1.startFollow({
             repeat: 100000,
             duration: 3000,
@@ -115,6 +118,18 @@ export class Level3 extends Phaser.Scene {
         
 
         this.physics.add.overlap(ball1, this.player, () => {
+            this.player.body.x = this.startpoint.x
+            this.player.body.y = this.startpoint.y
+        })
+        this.physics.add.overlap(ball2, this.player, () => {
+            this.player.body.x = this.startpoint.x
+            this.player.body.y = this.startpoint.y
+        })
+        this.physics.add.overlap(ball3, this.player, () => {
+            this.player.body.x = this.startpoint.x
+            this.player.body.y = this.startpoint.y
+        })
+        this.physics.add.overlap(ball4, this.player, () => {
             this.player.body.x = this.startpoint.x
             this.player.body.y = this.startpoint.y
         })

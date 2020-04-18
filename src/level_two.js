@@ -4,7 +4,6 @@ import gearImg from "./assets/gear.png"
 import blueCircle from "./assets/blue_circle.png"
 import level_2_JSON from "./assets/level2.json";
 import { Player } from "./player";
-import blue_circle from './assets/blue_circle.png';
 
 
 export class Level2 extends Phaser.Scene {
@@ -58,8 +57,8 @@ export class Level2 extends Phaser.Scene {
         })
 
         this.physics.add.collider(this.player, this.laserLayer, () => {
-            this.player.body.x = 176
-            this.player.body.y = 272
+            this.player.body.x = this.startpoint.x
+            this.player.body.y = this.startpoint.y
         })
 
         this.player.setInteractive()
@@ -116,10 +115,10 @@ export class Level2 extends Phaser.Scene {
             r.body.setVelocityY(this.speed)
             
             // this.physics.add.collider(r, this.foregroundLayer)
-            this.physics.add.collider(r, this.foregroundLayer, (r) => {
-                this.speed *= -1
-                r.body.setVelocityY(this.speed)
-            })
+            // this.physics.add.collider(r, this.foregroundLayer, (r) => {
+            //     this.speed *= -1
+            //     r.body.setVelocityY(this.speed)
+            // })
 
             this.physics.add.overlap(r, this.player, () => {
                 this.player.body.x = this.startpoint.x

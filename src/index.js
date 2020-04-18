@@ -21,7 +21,7 @@ const config = {
     }
   },
   // scene: [MenuScene, ControlScene, Level1]
-  scene: [ Level4,MainScene, LevelSelectScene, Level1, Level2, Level3],
+  scene: [MainScene, LevelSelectScene, Level1, Level2, Level3, Level4],
 };
 
 export const game = new Phaser.Game(config);
