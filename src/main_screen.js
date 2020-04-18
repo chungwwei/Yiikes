@@ -1,6 +1,6 @@
 
 import logoImg from "./assets/logo.png"
-import { gameState } from ".";
+import { gameState, game } from ".";
 export class MainScene extends Phaser.Scene { 
 
     constructor() {
@@ -70,7 +70,7 @@ export class MainScene extends Phaser.Scene {
         })
 
         this.btExit.on('pointerdown', () => {
-
+            game.destroy(true, true)
         })
 
         
