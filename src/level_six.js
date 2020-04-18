@@ -1,14 +1,14 @@
 import Phaser from "phaser";
 import tilesImg from "./assets/yiikes_tiles.png"
 import blueCircle from './assets/blue_circle.png';
-import level_4_JSON from "./assets/level4.json";
+import level_6_JSON from "./assets/level6.json";
 import { Player } from "./player";
 
 
-export class Level4 extends Phaser.Scene {
+export class Level6 extends Phaser.Scene {
     
     constructor() {
-        super('level4')
+        super('level6')
         this.player = null
         this.spacebar = null
         this.bullet = null
@@ -18,7 +18,7 @@ export class Level4 extends Phaser.Scene {
         console.log('loading')
         this.load.image('tiles', tilesImg)
         this.load.image('blue_circle', blueCircle)
-        this.load.tilemapTiledJSON('map', level_4_JSON)
+        this.load.tilemapTiledJSON('map', level_6_JSON)
     }
 
     create() {
@@ -168,18 +168,59 @@ export class Level4 extends Phaser.Scene {
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
         });
 
-        const circleOrigin = map.getObjectLayer('circular')['objects']
-        var circlePath = new Phaser.Curves.Path(400, 500).circleTo(70);
-        var ball1 = this.add.follower(circlePath, circleOrigin[0].x, circleOrigin[0].y, 'blue_circle');
+        const cO = map.getObjectLayer('circular')['objects']
+        var circlePath_1 = new Phaser.Curves.Path(100, 300).circleTo(90)
+        var circlePath_2 = new Phaser.Curves.Path(400, 800).circleTo(100)
+        var circlePath_3 = new Phaser.Curves.Path(400, 800).circleTo(100)
+        var circlePath_4 = new Phaser.Curves.Path(400, 800).circleTo(100)
+
+        var ball1 = this.add.follower(circlePath_1, 190, 300, 'blue_circle');
+        var ball2 = this.add.follower(circlePath_2, 750, 500, 'blue_circle')
+        var ball3 = this.add.follower(circlePath_3, 550, 500, 'blue_circle');
+        var ball4 = this.add.follower(circlePath_4, 350, 500, 'blue_circle');
+
 
         this.physics.world.enable(ball1)
+        this.physics.world.enable(ball2)
+        this.physics.world.enable(ball3)
+        this.physics.world.enable(ball4)
+
         ball1.body.setCircle(32)
+        ball2.body.setCircle(32)
+        ball3.body.setCircle(32)
+        ball4.body.setCircle(32)
+
         ball1.startFollow({
             repeat: 100000,
             duration: 3000,
         });
+        ball2.startFollow({
+            repeat: 100000,
+            duration: 3000,
+        });
+        ball3.startFollow({
+            repeat: 100000,
+            duration: 3000,
+        });
+        ball4.startFollow({
+            repeat: 100000,
+            duration: 3000,
+        });
+        
 
         this.physics.add.overlap(ball1, this.player, () => {
+            this.player.body.x = this.startpoint.x
+            this.player.body.y = this.startpoint.y
+        })
+        this.physics.add.overlap(ball2, this.player, () => {
+            this.player.body.x = this.startpoint.x
+            this.player.body.y = this.startpoint.y
+        })
+        this.physics.add.overlap(ball3, this.player, () => {
+            this.player.body.x = this.startpoint.x
+            this.player.body.y = this.startpoint.y
+        })
+        this.physics.add.overlap(ball4, this.player, () => {
             this.player.body.x = this.startpoint.x
             this.player.body.y = this.startpoint.y
         })
