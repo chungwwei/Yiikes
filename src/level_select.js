@@ -47,11 +47,11 @@ export class LevelSelectScene extends Phaser.Scene {
                 img = this.add.image(x, y, 'lock')
             else{
                 img = this.add.image(x, y, 'unlock')
-                img.setInteractive()
-                img.on('pointerdown', () =>{
-                    this.scene.start('level' + (i + 1))
-                })
             }
+            img.setInteractive()
+            img.on('pointerdown', () =>{
+                this.scene.start('level' + (i + 1))
+            })
             let text = this.add.text(img.x, 40 + img.y, "level " + (i + 1))
             text.setOrigin(0.5)
             text.setColor('0x000000')
@@ -63,11 +63,9 @@ export class LevelSelectScene extends Phaser.Scene {
         for (let i = 0; i < this.texts.length; i ++) {
             var text = this.texts[i];
             console.log(text)
-            if(gameState.levelCompletion[i] === true){
-                text.on('pointerdown', () => {
-                    this.scene.start('level' + (i + 1))
-                })
-            }
+            text.on('pointerdown', () => {
+                this.scene.start('level' + (i + 1))
+            })
         }
     }
 
