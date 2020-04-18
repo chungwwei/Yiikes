@@ -1,7 +1,11 @@
 import Phaser from "phaser";
 import tilesImg from "./assets/yiikes_tiles.png"
+import pauseImg from "./assets/pause_black_48x48.png"
+import playImg from "./assets/play_arrow_black_48x48.png"
+import homeImg from "./assets/home_black_48x48.png"
 import level_1_JSON from "./assets/level1.json";
 import { Player } from "./player";
+import { gameState } from ".";
 
 
 export class Level1 extends Phaser.Scene {
@@ -17,6 +21,9 @@ export class Level1 extends Phaser.Scene {
         console.log('loading')
         this.load.image('tiles', tilesImg)
         this.load.tilemapTiledJSON('map', level_1_JSON)
+        this.load.image('play', playImg)
+        this.load.image('pause', pauseImg)
+        this.load.image('home', homeImg)
     }
 
     create() {
@@ -108,6 +115,38 @@ export class Level1 extends Phaser.Scene {
                 this.player.body.x = this.startpoint.x
                 this.player.body.y = this.startpoint.y
             })   
+
+            // 1 for play, 0 for pause
+            this.switch = 1
+
+            // scene controls
+            this.btHome  = this.add.image(100, 100, 'home')
+            this.btSwitch = this.add.image(860, 100)
+            this.btSwitch.setTexture('pause')
+            
+            this.btHome.setInteractive()
+            this.btSwitch.setInteractive()
+
+            this.btHome.on('pointerdown', () => {
+                this.scene.start('main_screen')
+            })
+
+            // this.btSwitch.on('pointerdown', () => {
+            //     if (this.switch === 1) {
+            //         this.switch = 0
+            //         this.btSwitch.setTexture("__MISSING") 
+            //         this.btSwitch.setTexture("pause", 1) 
+            //         console.log(this.btSwitch.texture)
+            //         // this.scene.pause()
+            //     } else {
+            //         this.switch = 1
+            //         this.btSwitch.setTexture("__MISSING") 
+            //         this.btSwitch.setTexture('play', 1) 
+            //         console.log(this.btSwitch.texture)
+            //         // this.scene.run()
+            //     }
+            // })
+
         }
     }
 
@@ -129,15 +168,17 @@ export class Level1 extends Phaser.Scene {
         } else {
             this.player.update()
         }
-        
 
-        if (Phaser.Geom.Rectangle.ContainsRect(this.player, this.endpoint)) {
-            console.log("reach end")
+        if (this.switch === 1) {
+            this.btSwitch.setTexture('pause') 
+        } else {
+            this.btSwitch.setTexture("play") 
         }
-
-        // fanImage rotation
-        // this.rectangle.angle += 1
-        // this.rectangle.body.angle += 30
-        // this.polygon.angle += 1
+        
+        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
+            console.log("reach end")
+            gameState.levelCompletion[1] = true
+            this.scene.start('level2')
+        }
     }
 }

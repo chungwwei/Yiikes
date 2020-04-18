@@ -4,6 +4,8 @@ import gearImg from "./assets/gear.png"
 import blueCircle from "./assets/blue_circle.png"
 import level_3_JSON from "./assets/level3.json";
 import { Player } from "./player";
+import { gameState } from ".";
+import homeImg from "./assets/home_black_48x48.png"
 
 
 export class Level3 extends Phaser.Scene {
@@ -20,11 +22,12 @@ export class Level3 extends Phaser.Scene {
         this.load.image('tiles', tilesImg)
         this.load.image('gear', gearImg)
         this.load.image('blue_circle', blueCircle)
-        this.load.tilemapTiledJSON('map', level_3_JSON)
+        this.load.tilemapTiledJSON('map3', level_3_JSON)
+        this.load.image('home', homeImg)
     }
 
     create() {
-        const map = this.make.tilemap({key: 'map'})
+        const map = this.make.tilemap({key: 'map3'})
         const tiles = map.addTilesetImage('yiikes_tiles', 'tiles')
         this.backgroundLayer = map.createStaticLayer('background', tiles)
         this.foregroundLayer = map.createStaticLayer('foreground', tiles)
@@ -36,7 +39,8 @@ export class Level3 extends Phaser.Scene {
         const pointB = start_end_points[1]
         
         this.startpoint = this.add.rectangle(pointA.x, pointA.y, pointA.width, pointA.height)
-        this.endpoint = this.add.rectangle(pointB.x, pointB.y, pointB.width, pointB.height)
+        this.endpoint = this.add.rectangle(pointB.x, pointB.y, pointB.width, pointB.height, '0xff0000')
+        this.endpoint.setOrigin(0)
 
         this.player = new Player(this, this.startpoint.x, this.startpoint.y, 
                                     25, 25, this.foregroundLayer)
@@ -133,15 +137,13 @@ export class Level3 extends Phaser.Scene {
             this.player.body.x = this.startpoint.x
             this.player.body.y = this.startpoint.y
         })
-
         
-        const debugGraphics = this.add.graphics().setAlpha(0.75);
+        this.btHome  = this.add.image(100, 100, 'home')
 
-        this.player.body.debugShowBody = true
-        this.foregroundLayer.renderDebug(debugGraphics, {
-            tileColor: null, // Color of non-colliding tiles
-            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+        this.btHome.setInteractive()
+
+        this.btHome.on('pointerdown', () => {
+            this.scene.start('main_screen')
         })
     }
 
@@ -164,5 +166,10 @@ export class Level3 extends Phaser.Scene {
             this.player.update()
         }
 
+        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
+            console.log("reach end")
+            gameState.levelCompletion[3] = true
+            this.scene.start('level4')
+        }
     }
 }

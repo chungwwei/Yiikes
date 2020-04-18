@@ -1,9 +1,10 @@
 import Phaser from "phaser";
 import tilesImg from "./assets/yiikes_tiles.png"
-import gearImg from "./assets/gear.png"
 import blueCircle from "./assets/blue_circle.png"
 import level_2_JSON from "./assets/level2.json";
 import { Player } from "./player";
+import { gameState } from ".";
+import homeImg from "./assets/home_black_48x48.png"
 
 
 export class Level2 extends Phaser.Scene {
@@ -18,13 +19,13 @@ export class Level2 extends Phaser.Scene {
     preload() {
         console.log('loading')
         this.load.image('tiles', tilesImg)
-        this.load.image('gear', gearImg)
         this.load.image('blue_circle', blueCircle)
-        this.load.tilemapTiledJSON('map', level_2_JSON)
+        this.load.tilemapTiledJSON('map2', level_2_JSON)
+        this.load.image('home', homeImg)
     }
 
     create() {
-        const map = this.make.tilemap({key: 'map'})
+        const map = this.make.tilemap({key: 'map2'})
         const tiles = map.addTilesetImage('yiikes_tiles', 'tiles')
         this.backgroundLayer = map.createStaticLayer('background', tiles)
         this.foregroundLayer = map.createStaticLayer('foreground', tiles)
@@ -36,7 +37,8 @@ export class Level2 extends Phaser.Scene {
         const pointB = start_end_points[1]
         
         this.startpoint = this.add.rectangle(pointA.x, pointA.y, pointA.width, pointA.height)
-        this.endpoint = this.add.rectangle(pointB.x, pointB.y, pointB.width, pointB.height)
+        this.endpoint = this.add.rectangle(pointB.x, pointB.y, pointB.width, pointB.height, '0xff0000')
+        this.endpoint.setOrigin(0)
 
         this.player = new Player(this, this.startpoint.x, this.startpoint.y, 
                                     25, 25, this.foregroundLayer)
@@ -186,6 +188,13 @@ export class Level2 extends Phaser.Scene {
             this.player.body.y = this.startpoint.y
         })
 
+        this.btHome  = this.add.image(100, 100, 'home')
+
+        this.btHome.setInteractive()
+
+        this.btHome.on('pointerdown', () => {
+            this.scene.start('main_screen')
+        })
     }
 
 
@@ -205,6 +214,12 @@ export class Level2 extends Phaser.Scene {
             this.player.update(4)
         } else {
             this.player.update()
+        }
+
+        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
+            console.log("reach end")
+            gameState.levelCompletion[2] = true
+            this.scene.start('level3')
         }
 
     }

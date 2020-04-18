@@ -3,6 +3,7 @@ import tilesImg from "./assets/yiikes_tiles.png"
 import blueCircle from './assets/blue_circle.png';
 import level_4_JSON from "./assets/level4.json";
 import { Player } from "./player";
+import homeImg from "./assets/home_black_48x48.png"
 
 
 export class Level4 extends Phaser.Scene {
@@ -18,11 +19,12 @@ export class Level4 extends Phaser.Scene {
         console.log('loading')
         this.load.image('tiles', tilesImg)
         this.load.image('blue_circle', blueCircle)
-        this.load.tilemapTiledJSON('map', level_4_JSON)
+        this.load.tilemapTiledJSON('map4', level_4_JSON)
+        this.load.image('home', homeImg)
     }
 
     create() {
-        const map = this.make.tilemap({key: 'map'})
+        const map = this.make.tilemap({key: 'map4'})
         const tiles = map.addTilesetImage('yiikes_tiles', 'tiles')
         this.backgroundLayer = map.createStaticLayer('background', tiles)
         this.foregroundLayer = map.createStaticLayer('foreground', tiles)
@@ -184,6 +186,14 @@ export class Level4 extends Phaser.Scene {
             this.player.body.y = this.startpoint.y
         })
 
+        this.btHome  = this.add.image(100, 100, 'home')
+
+        this.btHome.setInteractive()
+
+        this.btHome.on('pointerdown', () => {
+            this.scene.start('main_screen')
+        })
+
     }
 
 
@@ -205,6 +215,11 @@ export class Level4 extends Phaser.Scene {
             this.player.update()
         }
 
+        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
+            console.log("reach end")
+            gameState.levelCompletion[4] = true
+            this.scene.start('level5')
+        }
 
     }
 }
