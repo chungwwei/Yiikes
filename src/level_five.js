@@ -5,6 +5,9 @@ import level_5_JSON from "./assets/level5.json";
 import { Player } from "./player";
 import { gameState } from ".";
 import homeImg from "./assets/home_black_48x48.png";
+import squareImg from "./assets/square.png"
+import playImg from "./assets/play_arrow_black_48x48.png"
+import pauseImg from "./assets/pause_black_48x48.png"
 
 
 export class Level5 extends Phaser.Scene {
@@ -22,6 +25,9 @@ export class Level5 extends Phaser.Scene {
         this.load.image('blue_circle', blueCircle)
         this.load.tilemapTiledJSON('map5', level_5_JSON)
         this.load.image('home', homeImg)
+        this.load.image('square', squareImg)
+        this.load.image('play', playImg)
+        this.load.image('pause', pauseImg)
     }
 
     create() {
@@ -83,102 +89,86 @@ export class Level5 extends Phaser.Scene {
         this.pointsGroup = this.physics.add.group({
             allowGravity: false,
         })
-        
-        this.imaginaryWall = this.physics.add.group({
-            allowGravity: false,
-            immovable: true
-        })
-        const imaginaryWallsObjs = map.getObjectLayer('imaginary_walls')['objects']
-        for (let i = 0; i < imaginaryWallsObjs.length; i ++) {
-            let x = imaginaryWallsObjs[i].x
-            let y = imaginaryWallsObjs[i].y
-            let width = imaginaryWallsObjs[i].width
-            let height= imaginaryWallsObjs[i].height
-            let wall = this.add.rectangle(x + width / 2, y + height / 2, width, height)
-            this.imaginaryWall.add(wall)
-            wall.setAlpha(0)
-        }
-
         const points = map.getObjectLayer('patrol_points_y')['objects']
+        this.yFollower = []
+        for (let i = 0; i < points.length; i += 2) {
+            let point_1 = points[i]
+            let point_2 = points[i + 1]
+            let x_1 = point_1.x, x_2 = point_2.x
+            let y_1 = point_1.y, y_2 = point_2.y
+            let path = new Phaser.Curves.Path(x_2, y_2).lineTo(x_1, y_1)
+            var patrolFollower = this.add.follower(path, x_1, y_2, 'square');
 
-        for (let i = 0; i <points.length; i ++) {
-            let point = points[i]
-            const p = this.pointsGroup.create(
-                point.x,
-                point.y,
-            )
-            p.setAlpha(0) // make it invisible
-
-            var r = this.add.rectangle(p.x - 8, p.y - 8, 16, 16, '0x1fffff')
-            this.physics.add.existing(r)
-            this.speed = -150
- 
-            r.body.setVelocityY(this.speed)
-            
-            // this.physics.add.collider(r, this.foregroundLayer)
-            this.physics.add.collider(r, this.foregroundLayer, (r) => {
-                this.speed *= -1
-                r.body.setVelocityY(this.speed)
+            patrolFollower.startFollow({
+                repeat: -1,
+                duration: 1000,
+                yoyo: true
             })
-
-            this.physics.add.overlap(r, this.player, () => {
+            this.yFollower.push(patrolFollower)
+            this.physics.world.enable(patrolFollower)
+            this.physics.add.collider(patrolFollower, this.player, () => {
                 this.player.body.x = this.startpoint.x
                 this.player.body.y = this.startpoint.y
             })   
-
-            this.physics.add.collider(r, this.imaginaryWall,(r) => {
-                this.speed *= -1
-                r.body.setVelocityY(this.speed)
-            })
         }
 
         const x_points = map.getObjectLayer('patrol_points_x')['objects']
+        this.xFollower = []
+        for (let i = 0; i < x_points.length; i += 2) {
+            let point_1 = x_points[i]
+            let point_2 = x_points[i + 1]
+            let x_1 = point_1.x, x_2 = point_2.x
+            let y_1 = point_1.y, y_2 = point_2.y
+            let path = new Phaser.Curves.Path(x_1, y_1).lineTo(x_2, y_2)
+            var patrolFollower = this.add.follower(path, x_1, y_2, 'square');
 
-        for (let i = 0; i < x_points.length; i ++) {
-            let point = x_points[i]
-            const p = this.pointsGroup.create(
-                point.x,
-                point.y,
-            )
-            p.setAlpha(0) // make it invisible
-
-            var r = this.add.rectangle(p.x - 8, p.y - 8, 16, 16, '0x1fffff')
-            this.physics.add.existing(r)
-            this.speed = -150
-            r.body.setVelocityX(this.speed)
-            this.physics.add.collider(r, this.foregroundLayer, (r) => {
-                this.speed *= -1
-                r.body.setVelocityX(this.speed)
+            patrolFollower.startFollow({
+                repeat: -1,
+                duration: 1000,
+                yoyo: true
             })
-
-            this.physics.add.overlap(r, this.player, () => {
+            this.xFollower.push(patrolFollower)
+            this.physics.world.enable(patrolFollower)
+            this.physics.add.collider(patrolFollower, this.player, () => {
                 this.player.body.x = this.startpoint.x
                 this.player.body.y = this.startpoint.y
             })   
-
-            this.physics.add.collider(r, this.imaginaryWall,(r) => {
-                this.speed *= -1
-                r.body.setVelocityX(this.speed)
-            })
         }
-        
-        const debugGraphics = this.add.graphics().setAlpha(0.75);
 
-        this.player.body.debugShowBody = true
-        this.foregroundLayer.renderDebug(debugGraphics, {
-            tileColor: null, // Color of non-colliding tiles
-            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-        });
+        
 
         this.btHome  = this.add.image(100, 100, 'home')
+        this.btSwitch = this.add.image(860, 100, 'pause')
 
         this.btHome.setInteractive()
+        this.btSwitch.setInteractive()
 
         this.btHome.on('pointerdown', () => {
             this.scene.start('main_screen')
         })
-
+        this.toggle = 1
+        this.btSwitch.on('pointerdown', () => {
+            // game is on, like to pause it
+            if (this.toggle === 1) {
+                this.xFollower.forEach((f) => {
+                    f.pauseFollow()
+                })
+                this.yFollower.forEach((f) => {
+                    f.pauseFollow()
+                })
+                this.toggle = 0
+                this.btSwitch.setTexture('play')
+            } else {
+                this.xFollower.forEach((f) => {
+                    f.resumeFollow()
+                })
+                this.yFollower.forEach((f) => {
+                    f.resumeFollow()
+                })
+                this.toggle = 1
+                this.btSwitch.setTexture('pause')
+            }
+        })
         var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
         for(let i = 0; i < keys.length; i++){
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
