@@ -3,8 +3,8 @@ import tilesImg from "./assets/yiikes_tiles.png"
 import blueCircle from './assets/blue_circle.png';
 import level_4_JSON from "./assets/level4.json";
 import { Player } from "./player";
-import homeImg from "./assets/home_black_48x48.png"
 import { gameState } from ".";
+import homeImg from "./assets/home_black_48x48.png"
 
 
 export class Level4 extends Phaser.Scene {
@@ -195,6 +195,10 @@ export class Level4 extends Phaser.Scene {
             this.scene.start('main_screen')
         })
 
+        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
+        for(let i = 0; i < keys.length; i++){
+            this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
+        }
     }
 
 
@@ -221,6 +225,14 @@ export class Level4 extends Phaser.Scene {
             gameState.levelCompletion[4] = true
             this.scene.start('level5')
         }
-
+        if(this.ONE.isDown) this.scene.start('level1')
+        if(this.TWO.isDown) this.scene.start('level2')
+        if(this.THREE.isDown) this.scene.start('level3')
+        if(this.FOUR.isDown) this.scene.start('level4')
+        if(this.FIVE.isDown) this.scene.start('level5')
+        if(this.SIX.isDown) this.scene.start('level6')
+        if(this.SEVEN.isDown) this.scene.start('level7')
+        if(this.EIGHT.isDown) this.scene.start('level8')
+        if(this.NINE.isDown) this.scene.start('level9')
     }
 }
