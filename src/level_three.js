@@ -6,6 +6,8 @@ import level_3_JSON from "./assets/level3.json";
 import { Player } from "./player";
 import { gameState } from ".";
 import homeImg from "./assets/home_black_48x48.png"
+import pauseImg from "./assets/pause_black_48x48.png"
+import playImg from "./assets/play_arrow_black_48x48.png"
 
 
 export class Level3 extends Phaser.Scene {
@@ -23,6 +25,8 @@ export class Level3 extends Phaser.Scene {
         this.load.image('gear', gearImg)
         this.load.image('blue_circle', blueCircle)
         this.load.tilemapTiledJSON('map3', level_3_JSON)
+        this.load.image('play', playImg)
+        this.load.image('pause', pauseImg)
         this.load.image('home', homeImg)
     }
 
@@ -139,11 +143,33 @@ export class Level3 extends Phaser.Scene {
         })
         
         this.btHome  = this.add.image(100, 100, 'home')
-
+        this.btSwitch = this.add.image(860, 100, 'pause')
+        
         this.btHome.setInteractive()
+        this.btSwitch.setInteractive()
 
         this.btHome.on('pointerdown', () => {
             this.scene.start('main_screen')
+        })
+
+        this.toggle = 1
+        this.btSwitch.on('pointerdown', () => {
+            // game is on, like to pause it
+            if (this.toggle === 1) {
+                ball1.pauseFollow()
+                ball2.pauseFollow()
+                ball3.pauseFollow()
+                ball4.pauseFollow()
+                this.toggle = 0
+                this.btSwitch.setTexture('play')
+            } else {
+                ball1.resumeFollow()
+                ball2.resumeFollow()
+                ball3.resumeFollow()
+                ball4.resumeFollow()
+                this.toggle = 1
+                this.btSwitch.setTexture('pause')
+            }
         })
     }
 

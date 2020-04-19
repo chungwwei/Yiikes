@@ -4,6 +4,7 @@ import blueCircle from './assets/blue_circle.png';
 import level_4_JSON from "./assets/level4.json";
 import { Player } from "./player";
 import homeImg from "./assets/home_black_48x48.png"
+import { gameState } from ".";
 
 
 export class Level4 extends Phaser.Scene {

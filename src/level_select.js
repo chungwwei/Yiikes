@@ -19,8 +19,12 @@ export class LevelSelectScene extends Phaser.Scene {
 
     create() {
         this.cameras.main.setBackgroundColor('0xffffff')
-        this.textReturn = this.add.text(150, 100, 'return')
-        this.return = this.add.image(100, 100, 'return')
+        this.btReturn = this.add.image(100, 100, 'return')
+        this.btReturn.setInteractive()
+        this.btReturn.setOrigin(0.5)
+        this.btReturn.on('pointerdown', () => {
+            this.scene.start('main_screen')
+        })
         
         this.texts = []
 

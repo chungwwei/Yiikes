@@ -6,6 +6,8 @@ import homeImg from "./assets/home_black_48x48.png"
 import level_1_JSON from "./assets/level1.json";
 import { Player } from "./player";
 import { gameState } from ".";
+import blueCircle from "./assets/blue_circle.png"
+import squareImg from "./assets/square.png"
 
 
 export class Level1 extends Phaser.Scene {
@@ -24,6 +26,8 @@ export class Level1 extends Phaser.Scene {
         this.load.image('play', playImg)
         this.load.image('pause', pauseImg)
         this.load.image('home', homeImg)
+        this.load.image('blue_circle', blueCircle)
+        this.load.image('square', squareImg)
     }
 
     create() {
@@ -89,65 +93,68 @@ export class Level1 extends Phaser.Scene {
             immovable: true
         })
         
+        this.followers = []
         const points = map.getObjectLayer('patrol_points')['objects']
+        
+        for (let i = 0; i < points.length; i += 2) {
+            let point_1 = points[i]
+            let point_2 = points[i + 1]
+            let x_1 = point_1.x, x_2 = point_2.x
+            let y_1 = point_1.y, y_2 = point_2.y
+            let path = new Phaser.Curves.Path(x_2, y_2).lineTo(x_1, y_1)
+            var patrolFollower = this.add.follower(path, x_1, y_2, 'square');
 
-        for (let i = 0; i <points.length; i ++) {
-            let point = points[i]
-            const p = this.pointsGroup.create(
-                point.x,
-                point.y,
-            )
-            p.setAlpha(0) // make it invisible
+            if (i === 2) {
+                patrolFollower.startFollow({
+                    repeat: -1,
+                    duration: 1200,
+                    yoyo: true
+                });
 
-            var r = this.add.rectangle(p.x - 8, p.y - 8, 16, 16, '0x1fffff')
-            this.physics.add.existing(r)
-            r.body.immovable = true
-            this.speed = -150
-            r.body.setVelocityY(this.speed)
-            
-            // this.physics.add.collider(r, this.foregroundLayer)
-            this.physics.add.collider(r, this.foregroundLayer, (r) => {
-                this.speed *= -1
-                r.body.setVelocityY(this.speed)
-            })
+            } else {
+                patrolFollower.startFollow({
+                    repeat: -1,
+                    duration: 1000,
+                    yoyo: true
+                })
+            }
 
-            this.physics.add.collider(r, this.player, () => {
+            this.physics.world.enable(patrolFollower)
+            this.followers.push(patrolFollower)
+            this.physics.add.collider(patrolFollower, this.player, () => {
                 this.player.body.x = this.startpoint.x
                 this.player.body.y = this.startpoint.y
             })   
-
-            // 1 for play, 0 for pause
-            this.switch = 1
-
-            // scene controls
-            this.btHome  = this.add.image(100, 100, 'home')
-            this.btSwitch = this.add.image(860, 100)
-            this.btSwitch.setTexture('pause')
-            
-            this.btHome.setInteractive()
-            this.btSwitch.setInteractive()
-
-            this.btHome.on('pointerdown', () => {
-                this.scene.start('main_screen')
-            })
-
-            // this.btSwitch.on('pointerdown', () => {
-            //     if (this.switch === 1) {
-            //         this.switch = 0
-            //         this.btSwitch.setTexture("__MISSING") 
-            //         this.btSwitch.setTexture("pause", 1) 
-            //         console.log(this.btSwitch.texture)
-            //         // this.scene.pause()
-            //     } else {
-            //         this.switch = 1
-            //         this.btSwitch.setTexture("__MISSING") 
-            //         this.btSwitch.setTexture('play', 1) 
-            //         console.log(this.btSwitch.texture)
-            //         // this.scene.run()
-            //     }
-            // })
-
         }
+        
+        // 1 for play, 0 for pause
+        this.btHome  = this.add.image(100, 100, 'home')
+        this.btSwitch = this.add.image(860, 100, 'pause')
+        
+        this.btHome.setInteractive()
+        this.btSwitch.setInteractive()
+
+        this.btHome.on('pointerdown', () => {
+            this.scene.start('main_screen')
+        })
+
+        this.toggle = 1
+        this.btSwitch.on('pointerdown', () => {
+            // game is on, like to pause it
+            if (this.toggle === 1) {
+                this.followers.forEach((f) => {
+                    f.pauseFollow()
+                })
+                this.toggle = 0
+                this.btSwitch.setTexture('play')
+            } else {
+                this.followers.forEach((f) => {
+                    f.resumeFollow()
+                })
+                this.toggle = 1
+                this.btSwitch.setTexture('pause')
+            }
+        })
     }
 
 
@@ -167,12 +174,6 @@ export class Level1 extends Phaser.Scene {
             this.player.update(4)
         } else {
             this.player.update()
-        }
-
-        if (this.switch === 1) {
-            this.btSwitch.setTexture('pause') 
-        } else {
-            this.btSwitch.setTexture("play") 
         }
         
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
