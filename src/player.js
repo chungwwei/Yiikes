@@ -20,15 +20,16 @@ export class Player extends Phaser.GameObjects.Rectangle {
     }
 
     fireBullet() {
-        if (this.fireCoolDown <= 0) {
-            console.log(this.direction)
+        console.log(this.bullet)
+        if (this.fireCoolDown <= 0 && this.bullet === null) {
+            console.log("fire bullet")
             this.bullet = new Projectile(this.scene, this.x, this.y, 20, 20, this.direction)
             this.fireCoolDown = 30
             this.scene.physics.add.collider(
                 this.bullet, 
                 this.foregroundLayer, 
                 (bullet, layer) => {
-                    console.log("bullet collide with wall")
+                    console.log("collide with wall: " + this.bullet)
                     this.bullet.destroy()
                     this.bullet = null
                     this.fireCoolDown = -1;
@@ -39,10 +40,12 @@ export class Player extends Phaser.GameObjects.Rectangle {
     }
 
     blink() {
-        if (this.bullet !== null) {
+        if (this.bullet !== null && this.fireCoolDown > 0) {
+            console.log(this.bullet)
             this.x = this.bullet.body.x + 10
             this.y = this.bullet.body.y + 10
             this.bullet.destroy()
+            console.log("blink")
             this.bullet = null
             this.fireCoolDown = -1
         }

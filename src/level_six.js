@@ -77,15 +77,7 @@ export class Level6 extends Phaser.Scene {
         // this.cameras.main.zoomTo(1.3)
 
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-
-        this.cursors.space.addListener('down', () => {
-            let bullet = this.player.getBullet()
-            if (bullet === null)
-                this.player.fireBullet()
-            else
-                this.player.blink()
-        })
-
+        
         this.pointsGroup = this.physics.add.group({
             allowGravity: false,
         })
@@ -299,5 +291,15 @@ export class Level6 extends Phaser.Scene {
         if(this.SEVEN.isDown) this.scene.start('level7')
         if(this.EIGHT.isDown) this.scene.start('level8')
         if(this.NINE.isDown) this.scene.start('level9')
+
+        if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+            console.log("IM CALLED")
+            let bullet = this.player.getBullet()
+            console.log("bullet is null?: " + bullet)
+            if (bullet == null)
+                this.player.fireBullet()
+            else
+                this.player.blink()
+        }
     }
 }

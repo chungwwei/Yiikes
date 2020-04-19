@@ -28,6 +28,7 @@ export class Level1 extends Phaser.Scene {
         this.load.image('home', homeImg)
         this.load.image('blue_circle', blueCircle)
         this.load.image('square', squareImg)
+        // this.load.audio('hit', ['assets/Hit_Hurt10.ogg'])
     }
 
     create() {
@@ -37,7 +38,7 @@ export class Level1 extends Phaser.Scene {
         this.foregroundLayer = map.createStaticLayer('foreground', tiles)
         this.laserLayer = map.createStaticLayer('lasers', tiles)
 
-
+        
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
         const pointB = start_end_points[1]
@@ -73,20 +74,10 @@ export class Level1 extends Phaser.Scene {
         this.player.setInteractive()
         this.cursors = this.input.keyboard.createCursorKeys()
 
-        // follow player
-        // this.cameras.main.setBounds(0, 0, 500, 450)
-        // this.cameras.main.startFollow(this.player)
-        // this.cameras.main.zoomTo(1.3)
+        // audio
+        // var hitAudio = this.sound.add('hit')
 
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-
-        this.cursors.space.addListener('down', () => {
-            let bullet = this.player.getBullet()
-            if (bullet === null)
-                this.player.fireBullet()
-            else
-                this.player.blink()
-        })
 
         this.pointsGroup = this.physics.add.group({
             allowGravity: false,
@@ -122,6 +113,7 @@ export class Level1 extends Phaser.Scene {
             this.physics.world.enable(patrolFollower)
             this.followers.push(patrolFollower)
             this.physics.add.collider(patrolFollower, this.player, () => {
+                // hitAudio.play()
                 this.player.body.x = this.startpoint.x
                 this.player.body.y = this.startpoint.y
             })   
@@ -173,13 +165,23 @@ export class Level1 extends Phaser.Scene {
             this.cursors.left.isUp && this.cursors.right.isUp) {
             this.player.update(4)
         } else {
-            this.player.update()
+            this.player.update(100)
         }
         
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
             console.log("reach end")
             gameState.levelCompletion[1] = true
             this.scene.start('level2')
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+            console.log("IM CALLED")
+            let bullet = this.player.getBullet()
+            console.log("bullet is null?: " + bullet)
+            if (bullet == null)
+                this.player.fireBullet()
+            else
+                this.player.blink()
         }
     }
 }
