@@ -155,11 +155,11 @@ export class Level1 extends Phaser.Scene {
         // this.physics.collide(this.player, this.foregroundLayer)
         if (this.cursors.left.isDown) {
             this.player.update(-1)
-        } else if (this.cursors.right.isDown) {
+        } if (this.cursors.right.isDown) {
             this.player.update(1)
-        } else if (this.cursors.up.isDown) {
+        } if (this.cursors.up.isDown) {
             this.player.update(2)
-        } else if (this.cursors.down.isDown) {
+        } if (this.cursors.down.isDown) {
             this.player.update(3)
         } else if (this.cursors.up.isUp && this.cursors.down.isUp &&
             this.cursors.left.isUp && this.cursors.right.isUp) {

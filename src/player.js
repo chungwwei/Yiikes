@@ -64,16 +64,16 @@ export class Player extends Phaser.GameObjects.Rectangle {
 
         if (direction === -1) {
             this.direction = -1
-            this.body.setVelocityX(-this.speed)
+            this.body.setVelocityX(-this.speed) // left
         } else if (direction === 1) {
             this.direction = 1
-            this.body.setVelocityX(this.speed)
+            this.body.setVelocityX(this.speed) //right
         } if (direction === 2) {
             this.direction = -2
-            this.body.setVelocityY(-this.speed)
+            this.body.setVelocityY(-this.speed) // up
         } else if (direction === 3) {
             this.direction = 2
-            this.body.setVelocityY(this.speed)
+            this.body.setVelocityY(this.speed) // down
         } 
 
         if (direction === 4) {
