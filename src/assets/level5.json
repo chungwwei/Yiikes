@@ -228,50 +228,6 @@
          "objects":[
                 {
                  "height":0,
-                 "id":26,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":363,
-                 "y":208
-                }, 
-                {
-                 "height":0,
-                 "id":27,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":482,
-                 "y":207
-                }, 
-                {
-                 "height":0,
-                 "id":28,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":617,
-                 "y":208
-                }, 
-                {
-                 "height":0,
-                 "id":29,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":730,
-                 "y":210
-                }, 
-                {
-                 "height":0,
                  "id":30,
                  "name":"",
                  "rotation":0,

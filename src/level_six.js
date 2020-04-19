@@ -177,9 +177,9 @@ export class Level6 extends Phaser.Scene {
         var circlePath_4 = new Phaser.Curves.Path(400, 800).circleTo(100)
 
         var ball1 = this.add.follower(circlePath_1, 190, 425, 'blue_circle');
-        var ball2 = this.add.follower(circlePath_2, 750, 625, 'blue_circle')
+        var ball2 = this.add.follower(circlePath_2, 800, 625, 'blue_circle');
         var ball3 = this.add.follower(circlePath_3, 550, 625, 'blue_circle');
-        var ball4 = this.add.follower(circlePath_4, 350, 625, 'blue_circle');
+        var ball4 = this.add.follower(circlePath_4, 300, 625, 'blue_circle');
 
 
         this.physics.world.enable(ball1)
@@ -264,6 +264,10 @@ export class Level6 extends Phaser.Scene {
             this.scene.start('main_screen')
         })
 
+        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
+        for(let i = 0; i < keys.length; i++){
+            this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
+        }
     }
 
 
@@ -290,7 +294,14 @@ export class Level6 extends Phaser.Scene {
             gameState.levelCompletion[6] = true
             this.scene.start('level7')
         }
-
-
+        if(this.ONE.isDown) this.scene.start('level1')
+        if(this.TWO.isDown) this.scene.start('level2')
+        if(this.THREE.isDown) this.scene.start('level3')
+        if(this.FOUR.isDown) this.scene.start('level4')
+        if(this.FIVE.isDown) this.scene.start('level5')
+        if(this.SIX.isDown) this.scene.start('level6')
+        if(this.SEVEN.isDown) this.scene.start('level7')
+        if(this.EIGHT.isDown) this.scene.start('level8')
+        if(this.NINE.isDown) this.scene.start('level9')
     }
 }
