@@ -8,6 +8,10 @@ import { Player } from "./player";
 import { gameState } from ".";
 import blueCircle from "./assets/blue_circle.png"
 import squareImg from "./assets/square.png"
+import dyingSheet from "./assets/dying.png"
+import idleSheet from "./assets/idle.png"
+import walkingSheet from "./assets/walking.png"
+import characterImg from './assets/character.png'
 
 
 export class Level1 extends Phaser.Scene {
@@ -28,7 +32,10 @@ export class Level1 extends Phaser.Scene {
         this.load.image('home', homeImg)
         this.load.image('blue_circle', blueCircle)
         this.load.image('square', squareImg)
-        // this.load.audio('hit', ['assets/Hit_Hurt10.ogg'])
+        this.load.spritesheet('dying_sheet', dyingSheet, { frameWidth: 25, frameHeight: 25 })
+        this.load.spritesheet('idle_sheet', idleSheet, { frameWidth: 25, frameHeight: 25 })
+        this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
+        this.load.image('character', characterImg)
     }
 
     create() {
@@ -51,7 +58,37 @@ export class Level1 extends Phaser.Scene {
         this.player = new Player(this, this.startpoint.x, this.startpoint.y, 
                                     25, 25, this.foregroundLayer)
         this.physics.add.existing(this.player)
+        this.player.setTexture('character')
 
+        // create animations
+        this.walkAnimation = this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('walk_sheet'),
+            frameRate: 1,
+            start:0,
+            end: 4,
+            repeat: -1
+        })
+
+        this.dyingAnimation = this.anims.create({
+            key: 'dying',
+            frames: this.anims.generateFrameNumbers('dying_sheet'),
+            start: 0,
+            end: 5,
+            frameRate: 3,
+            repeat: 0
+        })
+
+        this.idleAnimation = this.anims.create({
+            key: 'idle',
+            frames: this.anims.generateFrameNumbers('dying_sheet'),
+            frameRate: 6,
+            repeat: -1
+        })
+
+        this.player.anims.load('walk')
+        this.player.anims.load('idle')
+        this.player.anims.load('dying')
 
         this.player.body.collideWorldBounds = true
 
@@ -113,7 +150,7 @@ export class Level1 extends Phaser.Scene {
             this.physics.world.enable(patrolFollower)
             this.followers.push(patrolFollower)
             this.physics.add.collider(patrolFollower, this.player, () => {
-                // hitAudio.play()
+                this.player.play('dying')
                 this.player.body.x = this.startpoint.x
                 this.player.body.y = this.startpoint.y
             })   
@@ -154,6 +191,7 @@ export class Level1 extends Phaser.Scene {
         // this.physics.collide(this.player, this.spikesGroup, () => {this.player.x = 0; this.player.y = 0})
         // this.physics.collide(this.player, this.foregroundLayer)
         if (this.cursors.left.isDown) {
+            this.player.play('walk')
             this.player.update(-1)
         } if (this.cursors.right.isDown) {
             this.player.update(1)
@@ -161,11 +199,11 @@ export class Level1 extends Phaser.Scene {
             this.player.update(2)
         } if (this.cursors.down.isDown) {
             this.player.update(3)
-        } else if (this.cursors.up.isUp && this.cursors.down.isUp &&
+        } if (this.cursors.up.isUp && this.cursors.down.isUp &&
             this.cursors.left.isUp && this.cursors.right.isUp) {
             this.player.update(4)
         } else {
-            this.player.update(100)
+            this.player.update()
         }
         
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {

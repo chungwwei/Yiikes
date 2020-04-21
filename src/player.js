@@ -1,10 +1,10 @@
 import Phaser from "phaser";
 import { Projectile } from "./projectile";
 
-export class Player extends Phaser.GameObjects.Rectangle {
+export class Player extends Phaser.GameObjects.Sprite {
 
     constructor(scene, x, y, width, height, foreground) {
-        super(scene, x, y, width, height, '0xff23ff')
+        super(scene, x, y, width, height)
         this.speed = 80;
         this.jumpSpeed = 150;
         this.bullet = null
@@ -65,13 +65,13 @@ export class Player extends Phaser.GameObjects.Rectangle {
         if (direction === -1) {
             this.direction = -1
             this.body.setVelocityX(-this.speed) // left
-        } else if (direction === 1) {
+        } if (direction === 1) {
             this.direction = 1
             this.body.setVelocityX(this.speed) //right
         } if (direction === 2) {
             this.direction = -2
             this.body.setVelocityY(-this.speed) // up
-        } else if (direction === 3) {
+        } if (direction === 3) {
             this.direction = 2
             this.body.setVelocityY(this.speed) // down
         } 
@@ -81,10 +81,8 @@ export class Player extends Phaser.GameObjects.Rectangle {
             this.body.setVelocityY(0)
         }
 
-
         if (this.bullet !== null)
             this.bullet.update()
-
 
     }
 }
