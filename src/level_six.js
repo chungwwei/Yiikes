@@ -8,7 +8,8 @@ import homeImg from "./assets/home_black_48x48.png";
 import squareImg from "./assets/square.png"
 import playImg from "./assets/play_arrow_black_48x48.png"
 import pauseImg from "./assets/pause_black_48x48.png"
-
+import coinImg from './assets/coin.png'
+import { CoinGroup } from "./coin_system";
 
 export class Level6 extends Phaser.Scene {
     
@@ -28,6 +29,7 @@ export class Level6 extends Phaser.Scene {
         this.load.image('square', squareImg)
         this.load.image('play', playImg)
         this.load.image('pause', pauseImg)
+        this.load.image('coin', coinImg)
     }
 
     create() {
@@ -256,6 +258,16 @@ export class Level6 extends Phaser.Scene {
         for(let i = 0; i < keys.length; i++){
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
         }
+
+        this.shotText = this.add.text(200, 100, 'Number of Shots: 3')
+        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
+
+        // const coinPoints = map.getObjectLayer('coins')['objects']
+        // this.coins = this.add.group()
+        // console.log(typeof(this.coins))
+        // this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player)
+        // this.coins = this.coinGroup.createCoins()
+        // this.coins.children.iterate((c) => { c.setTexture('coin') })
     }
 
 
@@ -277,7 +289,17 @@ export class Level6 extends Phaser.Scene {
             this.player.update()
         }
 
-        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
+        if (this.cursors.up.isUp && this.cursors.down.isUp) {
+            this.player.body.setVelocityY(0)
+        }
+
+        if (this.cursors.left.isUp && this.cursors.right.isUp) {
+            this.player.body.setVelocityX(0)
+        }
+
+        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) 
+            && this.coinGroup.numberOfCoinsCollected >= this.coinGroup.numberOfCoins
+            ) {
             console.log("reach end")
             gameState.levelCompletion[6] = true
             this.scene.start('level7')
@@ -296,10 +318,15 @@ export class Level6 extends Phaser.Scene {
             console.log("IM CALLED")
             let bullet = this.player.getBullet()
             console.log("bullet is null?: " + bullet)
-            if (bullet == null)
+            if (bullet == null && this.player.numberOfShots > 0) {
+                this.player.numberOfShots --
                 this.player.fireBullet()
+            }
             else
                 this.player.blink()
         }
+
+        this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
+        // this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
     }
 }

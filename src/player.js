@@ -12,11 +12,17 @@ export class Player extends Phaser.GameObjects.Sprite {
         this.direction = 1
         this.fireCoolDown = 0
         this.foregroundLayer = foreground
+        this.numberOfShots = 3
         scene.add.existing(this)
+        scene.physics.add.existing(this)
     }
 
     getBullet() {
         return this.bullet
+    }
+    
+    getNumberOfShots() {
+        return this.numberOfShots
     }
 
     fireBullet() {

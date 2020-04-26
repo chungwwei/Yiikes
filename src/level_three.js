@@ -8,6 +8,12 @@ import { gameState } from ".";
 import homeImg from "./assets/home_black_48x48.png"
 import pauseImg from "./assets/pause_black_48x48.png"
 import playImg from "./assets/play_arrow_black_48x48.png"
+import dyingSheet from "./assets/dying.png"
+import idleSheet from "./assets/idle.png"
+import walkingSheet from "./assets/walking.png"
+import characterImg from './assets/character.png'
+import coinImg from './assets/coin.png'
+import { CoinGroup } from "./coin_system";
 
 
 export class Level3 extends Phaser.Scene {
@@ -28,6 +34,11 @@ export class Level3 extends Phaser.Scene {
         this.load.image('play', playImg)
         this.load.image('pause', pauseImg)
         this.load.image('home', homeImg)
+        this.load.spritesheet('dying_sheet', dyingSheet, { frameWidth: 25, frameHeight: 25 })
+        this.load.spritesheet('idle_sheet', idleSheet, { frameWidth: 25, frameHeight: 25 })
+        this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
+        this.load.image('character', characterImg)
+        this.load.image('coin', coinImg)
     }
 
     create() {
@@ -49,6 +60,37 @@ export class Level3 extends Phaser.Scene {
         this.player = new Player(this, this.startpoint.x, this.startpoint.y, 
                                     25, 25, this.foregroundLayer)
         this.physics.add.existing(this.player)
+        this.player.setTexture('character')
+        this.player.body.setSize(25, 25)
+        // create animations
+        this.walkAnimation = this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('walk_sheet'),
+            frameRate: 10,
+            start:0,
+            end: 4,
+            repeat: -1
+        })
+
+        this.dyingAnimation = this.anims.create({
+            key: 'dying',
+            frames: this.anims.generateFrameNumbers('dying_sheet'),
+            start: 0,
+            end: 5,
+            frameRate: 60,
+            repeat: 0
+        })
+
+        this.idleAnimation = this.anims.create({
+            key: 'idle',
+            frames: this.anims.generateFrameNumbers('dying_sheet'),
+            frameRate: 6,
+            repeat: -1
+        })
+
+        this.player.anims.load('walk')
+        this.player.anims.load('idle')
+        this.player.anims.load('dying')
 
 
         this.player.body.collideWorldBounds = true
@@ -59,14 +101,9 @@ export class Level3 extends Phaser.Scene {
         })
 
         this.laserLayer.setCollisionBetween(21, 25, true, true)
-        this.physics.overlap(this.player, this.laserLayer, () => {
-            this.player.body.x = this.startpoint.x
-            this.player.body.y = this.startpoint.y
-        })
 
         this.physics.add.collider(this.player, this.laserLayer, () => {
-            this.player.body.x = this.startpoint.x
-            this.player.body.y = this.startpoint.y
+            this.resetPlayer()
         })
 
         this.player.setInteractive()
@@ -118,20 +155,16 @@ export class Level3 extends Phaser.Scene {
         
 
         this.physics.add.overlap(ball1, this.player, () => {
-            this.player.body.x = this.startpoint.x
-            this.player.body.y = this.startpoint.y
+            this.resetPlayer()
         })
         this.physics.add.overlap(ball2, this.player, () => {
-            this.player.body.x = this.startpoint.x
-            this.player.body.y = this.startpoint.y
+            this.resetPlayer()
         })
         this.physics.add.overlap(ball3, this.player, () => {
-            this.player.body.x = this.startpoint.x
-            this.player.body.y = this.startpoint.y
+            this.resetPlayer()
         })
         this.physics.add.overlap(ball4, this.player, () => {
-            this.player.body.x = this.startpoint.x
-            this.player.body.y = this.startpoint.y
+            this.resetPlayer()
         })
         
         this.btHome  = this.add.image(100, 100, 'home')
@@ -167,6 +200,16 @@ export class Level3 extends Phaser.Scene {
         for(let i = 0; i < keys.length; i++){
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
         }
+
+        this.shotText = this.add.text(200, 100, 'Number of Shots: 3')
+        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
+
+        const coinPoints = map.getObjectLayer('coins')['objects']
+        this.coins = this.add.group()
+        console.log(typeof(this.coins))
+        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player)
+        this.coins = this.coinGroup.createCoins()
+        this.coins.children.iterate((c) => { c.setTexture('coin') })
     }
 
 
@@ -174,12 +217,16 @@ export class Level3 extends Phaser.Scene {
         // this.physics.collide(this.player, this.spikesGroup, () => {this.player.x = 0; this.player.y = 0})
         // this.physics.collide(this.player, this.foregroundLayer)
         if (this.cursors.left.isDown) {
+            this.player.play('walk')
             this.player.update(-1)
         } if (this.cursors.right.isDown) {
+            this.player.play('walk')
             this.player.update(1)
         } if (this.cursors.up.isDown) {
+            this.player.play('walk')
             this.player.update(2)
         } if (this.cursors.down.isDown) {
+            this.player.play('walk')
             this.player.update(3)
         } else if (this.cursors.up.isUp && this.cursors.down.isUp &&
             this.cursors.left.isUp && this.cursors.right.isUp) {
@@ -188,7 +235,16 @@ export class Level3 extends Phaser.Scene {
             this.player.update()
         }
 
-        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
+        if (this.cursors.up.isUp && this.cursors.down.isUp) {
+            this.player.body.setVelocityY(0)
+        }
+
+        if (this.cursors.left.isUp && this.cursors.right.isUp) {
+            this.player.body.setVelocityX(0)
+        }
+
+        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) &&
+            this.coinGroup.numberOfCoinsCollected >= this.coinGroup.numberOfCoins) {
             console.log("reach end")
             gameState.levelCompletion[3] = true
             this.scene.start('level4')
@@ -207,10 +263,24 @@ export class Level3 extends Phaser.Scene {
             console.log("IM CALLED")
             let bullet = this.player.getBullet()
             console.log("bullet is null?: " + bullet)
-            if (bullet == null)
+            if (bullet == null && this.player.numberOfShots > 0) {
+                this.player.numberOfShots --
                 this.player.fireBullet()
+            }
             else
                 this.player.blink()
         }
+
+        this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
+        this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
+    }
+
+    resetPlayer() {
+        this.player.numberOfShots = 3
+        // this.sound.play('hit')
+        this.coinGroup.createCoins()
+        this.coins.children.iterate((c) => { c.setTexture('coin') })
+        this.player.body.x = this.startpoint.x
+        this.player.body.y = this.startpoint.y
     }
 }

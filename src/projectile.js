@@ -4,9 +4,9 @@ export class Projectile extends Phaser.GameObjects.Rectangle {
 
     constructor(scene, x, y, width, height, direction) {
         super(scene, x, y, width, height, '0x2f11ff')
-        this.speed = 100;
+        this.speed = 180;
         this.scene = scene
-        this.timer = 80;
+        this.timer = 125;
         this.direction = direction
         this.scene.physics
         scene.add.existing(this)

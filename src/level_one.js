@@ -12,6 +12,8 @@ import dyingSheet from "./assets/dying.png"
 import idleSheet from "./assets/idle.png"
 import walkingSheet from "./assets/walking.png"
 import characterImg from './assets/character.png'
+import coinImg from './assets/coin.png'
+import { CoinGroup } from "./coin_system";
 
 
 export class Level1 extends Phaser.Scene {
@@ -36,6 +38,9 @@ export class Level1 extends Phaser.Scene {
         this.load.spritesheet('idle_sheet', idleSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.image('character', characterImg)
+        this.load.image('coin', coinImg)
+
+        // this.load.audio('hit', 'assets/audio/hit.ogg')
     }
 
     create() {
@@ -59,12 +64,12 @@ export class Level1 extends Phaser.Scene {
                                     25, 25, this.foregroundLayer)
         this.physics.add.existing(this.player)
         this.player.setTexture('character')
-
+        this.player.body.setSize(25, 25)
         // create animations
         this.walkAnimation = this.anims.create({
             key: 'walk',
             frames: this.anims.generateFrameNumbers('walk_sheet'),
-            frameRate: 1,
+            frameRate: 10,
             start:0,
             end: 4,
             repeat: -1
@@ -75,7 +80,7 @@ export class Level1 extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('dying_sheet'),
             start: 0,
             end: 5,
-            frameRate: 3,
+            frameRate: 60,
             repeat: 0
         })
 
@@ -98,14 +103,9 @@ export class Level1 extends Phaser.Scene {
         })
 
         this.laserLayer.setCollisionBetween(21, 25, true, true)
-        this.physics.overlap(this.player, this.laserLayer, () => {
-            this.player.body.x = this.startpoint.x
-            this.player.body.y = this.startpoint.y
-        })
 
         this.physics.add.collider(this.player, this.laserLayer, () => {
-            this.player.body.x = 176
-            this.player.body.y = 272
+            this.resetPlayer()
         })
 
         this.player.setInteractive()
@@ -149,10 +149,8 @@ export class Level1 extends Phaser.Scene {
 
             this.physics.world.enable(patrolFollower)
             this.followers.push(patrolFollower)
-            this.physics.add.collider(patrolFollower, this.player, () => {
-                this.player.play('dying')
-                this.player.body.x = this.startpoint.x
-                this.player.body.y = this.startpoint.y
+            this.physics.add.overlap(patrolFollower, this.player, () => {
+                this.resetPlayer()
             })   
         }
         
@@ -184,42 +182,82 @@ export class Level1 extends Phaser.Scene {
                 this.btSwitch.setTexture('pause')
             }
         })
-    }
 
+        this.shotText = this.add.text(200, 100, 'Number of Shots: 3')
+        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
+
+        const coinPoints = map.getObjectLayer('coins')['objects']
+        this.coins = this.add.group()
+        console.log(typeof(this.coins))
+        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player)
+        this.coins = this.coinGroup.createCoins()
+        this.coins.children.iterate((c) => { c.setTexture('coin') })
+
+    }
+ 
 
     update() {
+        // let bullet = this.player.getBullet()
+        // if (bullet !== null) bullet.update()
         // this.physics.collide(this.player, this.spikesGroup, () => {this.player.x = 0; this.player.y = 0})
         // this.physics.collide(this.player, this.foregroundLayer)
         if (this.cursors.left.isDown) {
             this.player.play('walk')
             this.player.update(-1)
         } if (this.cursors.right.isDown) {
+            this.player.play('walk')
             this.player.update(1)
         } if (this.cursors.up.isDown) {
+            this.player.play('walk')
             this.player.update(2)
         } if (this.cursors.down.isDown) {
+            this.player.play('walk')
             this.player.update(3)
-        } if (this.cursors.up.isUp && this.cursors.down.isUp &&
+        } else if (this.cursors.up.isUp && this.cursors.down.isUp &&
             this.cursors.left.isUp && this.cursors.right.isUp) {
             this.player.update(4)
         } else {
-            this.player.update()
+            this.player.update(100)
         }
-        
-        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
+
+        if (this.cursors.up.isUp && this.cursors.down.isUp) {
+            this.player.body.setVelocityY(0)
+        }
+
+        if (this.cursors.left.isUp && this.cursors.right.isUp) {
+            this.player.body.setVelocityX(0)
+        }
+
+        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) &&
+            this.coinGroup.numberOfCoinsCollected >= this.coinGroup.numberOfCoins) {
             console.log("reach end")
             gameState.levelCompletion[1] = true
             this.scene.start('level2')
         }
-
+        
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
             console.log("IM CALLED")
             let bullet = this.player.getBullet()
             console.log("bullet is null?: " + bullet)
-            if (bullet == null)
+            if (bullet == null && this.player.numberOfShots > 0) {
+                this.player.numberOfShots --
                 this.player.fireBullet()
+            }
             else
                 this.player.blink()
         }
+
+        this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
+        this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
+
+    }
+
+    resetPlayer() {
+        this.player.numberOfShots = 3
+        // this.sound.play('hit')
+        this.coinGroup.createCoins()
+        this.coins.children.iterate((c) => { c.setTexture('coin') })
+        this.player.body.x = this.startpoint.x
+        this.player.body.y = this.startpoint.y
     }
 }
