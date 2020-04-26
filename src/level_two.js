@@ -48,15 +48,19 @@ export class Level2 extends Phaser.Scene {
         this.foregroundLayer = map.createStaticLayer('foreground', tiles)
         this.laserLayer = map.createStaticLayer('lasers', tiles)
 
-
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
         const pointB = start_end_points[1]
-        
+        const waterObjectLayer = map.getObjectLayer('water')['objects']
+        const waterAreaA = waterObjectLayer[0]
+        const waterAreaB = waterObjectLayer[1]
         this.startpoint = this.add.rectangle(pointA.x, pointA.y, pointA.width, pointA.height)
         this.endpoint = this.add.rectangle(pointB.x, pointB.y, pointB.width, pointB.height, '0xff0000')
         this.endpoint.setOrigin(0)
-
+        this.water = this.add.rectangle(waterAreaA.x, waterAreaA.y, waterAreaA.width, waterAreaA.height)
+        this.water2= this.add.rectangle(waterAreaB.x, waterAreaB.y, waterAreaB.width, waterAreaB.height)
+        this.water.setOrigin(0)
+        this.water2.setOrigin(0)
         this.player = new Player(this, this.startpoint.x, this.startpoint.y, 
                                     25, 25, this.foregroundLayer)
         this.physics.add.existing(this.player)
@@ -112,11 +116,6 @@ export class Level2 extends Phaser.Scene {
 
         this.player.setInteractive()
         this.cursors = this.input.keyboard.createCursorKeys()
-
-        // follow player
-        // this.cameras.main.setBounds(0, 0, 500, 450)
-        // this.cameras.main.startFollow(this.player)
-        // this.cameras.main.zoomTo(1.3)
 
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
 
@@ -271,6 +270,14 @@ export class Level2 extends Phaser.Scene {
             gameState.levelCompletion[2] = true
             this.scene.start('level3')
         }
+
+        if (Phaser.Geom.Rectangle.Contains(this.water, this.player.x, this.player.y) || 
+            Phaser.Geom.Rectangle.Contains(this.water2, this.player.x, this.player.y)) {
+            this.player.speed = 110
+        } else {
+            this.player.speed = 80
+        }
+
         if(this.ONE.isDown) this.scene.start('level1')
         if(this.TWO.isDown) this.scene.start('level2')
         if(this.THREE.isDown) this.scene.start('level3')
