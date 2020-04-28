@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import tilesImg from "./assets/yiikes_tiles.png"
-import blueCircle from "./assets/blue_circle.png";
 import level_7_JSON from "./assets/level7.json";
 import { Player } from "./player";
 import { gameState } from ".";
@@ -11,7 +10,7 @@ import pauseImg from "./assets/pause_black_48x48.png"
 import coinImg from "./assets/coin.png"
 import keyImg from "./assets/key.png"
 import { CoinGroup } from "./coin_system";
-
+//TODO ADD PAUSE BUTTON
 export class Level7 extends Phaser.Scene {
     constructor() {
         super('level7')
@@ -131,6 +130,29 @@ export class Level7 extends Phaser.Scene {
         this.btHome.on('pointerdown', () => {
             this.scene.start('main_screen')
         })
+        //Pause Game
+        this.toggle = 1
+        this.btSwitch.on('pointerdown', () => {
+            if (this.toggle === 1) {
+                this.xFollower.forEach((f) => {
+                    f.pauseFollow()
+                })
+                this.yFollower.forEach((f) => {
+                    f.pauseFollow()
+                })
+                this.toggle = 0
+                this.btSwitch.setTexture('play')
+            } else {
+                this.xFollower.forEach((f) => {
+                    f.resumeFollow()
+                })
+                this.yFollower.forEach((f) => {
+                    f.resumeFollow()
+                })
+                this.toggle = 1
+                this.btSwitch.setTexture('pause')
+            }
+        })
         //Initialize Level Skip Cheats
         var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
         for(let i = 0; i < keys.length; i++){
@@ -211,7 +233,6 @@ export class Level7 extends Phaser.Scene {
 
     resetPlayer() {
         this.player.numberOfShots = 3
-        // this.sound.play('hit')
         this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
         this.player.body.x = this.startpoint.x
