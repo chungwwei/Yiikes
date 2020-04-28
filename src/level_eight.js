@@ -11,6 +11,11 @@ import coinImg from "./assets/coin.png"
 import keyImg from "./assets/key.png"
 import { CoinGroup } from "./coin_system";
 
+var pickupSound = require('./assets/audio/pickup.wav')
+var hitSound = require('./assets/audio/hit.ogg')
+var clickSound = require('./assets/audio/click.wav')
+var levelMusic = require('./assets/audio/IttyBitty8Bit.mp3')
+
 export class Level8 extends Phaser.Scene {
     constructor() {
         super('level8')
@@ -27,6 +32,11 @@ export class Level8 extends Phaser.Scene {
         this.load.image('pause', pauseImg)
         this.load.image('coin', coinImg)
         this.load.image('key', keyImg)
+
+        this.load.audio('hit', hitSound)
+        this.load.audio('click', clickSound)
+        this.load.audio('pickup', pickupSound)
+        this.load.audio('music', levelMusic)
     }
 
     create() {
@@ -46,10 +56,16 @@ export class Level8 extends Phaser.Scene {
         this.endpoint = this.add.rectangle(pointB.x, pointB.y, pointB.width, pointB.height)
         this.player = new Player(this, this.startpoint.x, this.startpoint.y, 25, 25, this.foregroundLayer)
         this.physics.add.existing(this.player)
+        //audio
+        this.hitAudio = this.sound.add('hit')
+        this.pickupAudio = this.sound.add('pickup')
+        this.clickAudio = this.sound.add('click')
+        this.levelMusic = this.sound.add('music')
+        this.levelMusic.play({loop: true})
         //Initialize and texture the coins
         const coinPoints = map.getObjectLayer('coins')['objects']
         this.coins = this.add.group()
-        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player)
+        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player, this.pickupAudio)
         this.coins = this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
         //Add Player  Collision
