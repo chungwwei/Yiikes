@@ -2,13 +2,14 @@ import Phaser from "phaser";
 
 export class CoinGroup {
 
-    constructor(scene, locationArr, group, player) {
+    constructor(scene, locationArr, group, player, pickupAudio) {
         this.scene = scene
         this.locationArr = locationArr
         this.numberOfCoins = this.locationArr.length;
         this.numberOfCoinsCollected = 0
         this.group = group
         this.player = player
+        this.pickupAudio = pickupAudio
     }
 
     createCoins() {
@@ -21,7 +22,7 @@ export class CoinGroup {
             this.scene.physics.world.enable(c)
             c.body.setCircle(6)
             this.scene.physics.add.overlap(c, this.player, () => {
-                // this.sound.play('hit')
+                this.pickupAudio.play()
                 this.numberOfCoinsCollected ++
                 c.destroy()
             })   

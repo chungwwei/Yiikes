@@ -236,7 +236,7 @@ export class Level5 extends Phaser.Scene {
                 this.player.blink()
         }
 
-        this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
+        // this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
         // this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
         
     }

@@ -14,8 +14,10 @@ import walkingSheet from "./assets/walking.png"
 import characterImg from './assets/character.png'
 import coinImg from './assets/coin.png'
 import { CoinGroup } from "./coin_system";
-
-
+var pickupSound = require('./assets/audio/pickup.wav')
+var hitSound = require('./assets/audio/hit.ogg')
+var clickSound = require('./assets/audio/click.wav')
+var levelMusic = require('./assets/audio/IttyBitty8Bit.mp3')
 export class Level2 extends Phaser.Scene {
     
     constructor() {
@@ -39,6 +41,11 @@ export class Level2 extends Phaser.Scene {
         this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.image('character', characterImg)
         this.load.image('coin', coinImg)
+
+        this.load.audio('hit', hitSound)
+        this.load.audio('click', clickSound)
+        this.load.audio('pickup', pickupSound)
+        this.load.audio('music', levelMusic)
     }
 
     create() {
@@ -117,6 +124,13 @@ export class Level2 extends Phaser.Scene {
         this.player.setInteractive()
         this.cursors = this.input.keyboard.createCursorKeys()
 
+        // audio
+        this.hitAudio = this.sound.add('hit')
+        this.pickupAudio = this.sound.add('pickup')
+        this.clickAudio = this.sound.add('click')
+        this.levelMusic = this.sound.add('music')
+        this.levelMusic.play({loop: true})
+
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
 
         this.pointsGroup = this.physics.add.group({
@@ -168,55 +182,21 @@ export class Level2 extends Phaser.Scene {
         }
                 
         var circlePath = new Phaser.Curves.Path(400, 500).circleTo(50);
-        var ball1 = this.add.follower(circlePath, 750, 400, 'blue_circle');
+        this.ball1 = this.add.follower(circlePath, 750, 400, 'blue_circle');
 
-        this.physics.world.enable(ball1)
-        ball1.body.setCircle(32)
-        ball1.startFollow({
+        this.physics.world.enable(this.ball1)
+        this.ball1.body.setCircle(32)
+        this.ball1.startFollow({
             repeat: 100000,
             duration: 3000,
         });
 
-        this.physics.add.overlap(ball1, this.player, () => {
+        this.physics.add.overlap(this.ball1, this.player, () => {
             this.resetPlayer()
         })
 
-        // 1 for play, 0 for pause
-        this.btHome  = this.add.image(100, 100, 'home')
-        this.btSwitch = this.add.image(860, 100, 'pause')
-        
-        this.btHome.setInteractive()
-        this.btSwitch.setInteractive()
+        this.setUpHud()
 
-        this.btHome.on('pointerdown', () => {
-            this.scene.start('main_screen')
-        })
-
-        this.toggle = 1
-        this.btSwitch.on('pointerdown', () => {
-            // game is on, like to pause it
-            if (this.toggle === 1) {
-                this.xFollower.forEach((f) => {
-                    f.pauseFollow()
-                })
-                this.yFollower.forEach((f) => {
-                    f.pauseFollow()
-                })
-                ball1.pauseFollow()
-                this.toggle = 0
-                this.btSwitch.setTexture('play')
-            } else {
-                this.xFollower.forEach((f) => {
-                    f.resumeFollow()
-                })
-                this.yFollower.forEach((f) => {
-                    f.resumeFollow()
-                })
-                ball1.resumeFollow()
-                this.toggle = 1
-                this.btSwitch.setTexture('pause')
-            }
-        })
         var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
         for(let i = 0; i < keys.length; i++){
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
@@ -228,7 +208,7 @@ export class Level2 extends Phaser.Scene {
         const coinPoints = map.getObjectLayer('coins')['objects']
         this.coins = this.add.group()
         console.log(typeof(this.coins))
-        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player)
+        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player, this.pickupAudio)
         this.coins = this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
     }
@@ -268,6 +248,7 @@ export class Level2 extends Phaser.Scene {
             this.coinGroup.numberOfCoinsCollected >= this.coinGroup.numberOfCoins) {
             console.log("reach end")
             gameState.levelCompletion[2] = true
+            this.killMusic()
             this.scene.start('level3')
         }
 
@@ -306,10 +287,60 @@ export class Level2 extends Phaser.Scene {
 
     resetPlayer() {
         this.player.numberOfShots = 3
-        // this.sound.play('hit')
+        this.hitAudio.play()
         this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
         this.player.body.x = this.startpoint.x
         this.player.body.y = this.startpoint.y
+    }
+
+    pauseMusic() { this.levelMusic.pause() }
+    resumeMusic() { this.levelMusic.resume() }
+    killMusic() { this.levelMusic.destroy() }
+
+    setUpHud() {
+        // 1 for play, 0 for pause
+        this.btHome  = this.add.image(100, 100, 'home')
+        this.btSwitch = this.add.image(860, 100, 'pause')
+        
+        this.btHome.setInteractive()
+        this.btSwitch.setInteractive()
+
+        this.btHome.on('pointerdown', () => {
+            this.clickAudio.play()
+            this.killMusic()
+            this.scene.start('main_screen')
+        })
+
+        this.toggle = 1
+        this.btSwitch.on('pointerdown', () => {
+            // game is on, like to pause it
+            if (this.toggle === 1) {
+                this.xFollower.forEach((f) => {
+                    f.pauseFollow()
+                })
+                this.yFollower.forEach((f) => {
+                    f.pauseFollow()
+                })
+                this.ball1.pauseFollow()
+                this.pauseMusic()
+                this.toggle = 0
+                this.btSwitch.setTexture('play')
+            } else {
+                this.xFollower.forEach((f) => {
+                    f.resumeFollow()
+                })
+                this.yFollower.forEach((f) => {
+                    f.resumeFollow()
+                })
+                this.ball1.resumeFollow()
+                this.resumeMusic()
+                this.toggle = 1
+                this.btSwitch.setTexture('pause')
+            }
+        })
+
+        this.shotText = this.add.text(200, 100, 'Number of Shots: 3')
+        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
     }
 }

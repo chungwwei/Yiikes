@@ -14,8 +14,10 @@ import walkingSheet from "./assets/walking.png"
 import characterImg from './assets/character.png'
 import coinImg from './assets/coin.png'
 import { CoinGroup } from "./coin_system";
-
-
+var pickupSound = require('./assets/audio/pickup.wav')
+var hitSound = require('./assets/audio/hit.ogg')
+var clickSound = require('./assets/audio/click.wav')
+var levelMusic = require('./assets/audio/IttyBitty8Bit.mp3')
 export class Level3 extends Phaser.Scene {
     
     constructor() {
@@ -39,6 +41,13 @@ export class Level3 extends Phaser.Scene {
         this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.image('character', characterImg)
         this.load.image('coin', coinImg)
+
+        this.load.audio('hit', hitSound)
+        this.load.audio('click', clickSound)
+        this.load.audio('pickup', pickupSound)
+        this.load.audio('music', levelMusic)
+        this.levelMusic = this.sound.add('music')
+        this.levelMusic.play({loop: true})
     }
 
     create() {
@@ -109,6 +118,11 @@ export class Level3 extends Phaser.Scene {
         this.player.setInteractive()
         this.cursors = this.input.keyboard.createCursorKeys()
 
+        // audio
+        this.hitAudio = this.sound.add('hit')
+        this.pickupAudio = this.sound.add('pickup')
+        this.clickAudio = this.sound.add('click')
+
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
 
         this.pointsGroup = this.physics.add.group({
@@ -120,82 +134,55 @@ export class Level3 extends Phaser.Scene {
         var circlePath_3 = new Phaser.Curves.Path(550, 350).circleTo(130)
         var circlePath_4 = new Phaser.Curves.Path(500, 300).circleTo(100)
 
-        var ball1 = this.add.follower(circlePath_1, 700, 500, 'blue_circle');
-        var ball2 = this.add.follower(circlePath_2, 450, 600, 'blue_circle')
-        var ball3 = this.add.follower(circlePath_3, 500, 350, 'blue_circle');
-        var ball4 = this.add.follower(circlePath_4, 400, 300, 'blue_circle');
+        this.ball1 = this.add.follower(circlePath_1, 700, 500, 'blue_circle');
+        this.ball2 = this.add.follower(circlePath_2, 450, 600, 'blue_circle')
+        this.ball3 = this.add.follower(circlePath_3, 500, 350, 'blue_circle');
+        this.ball4 = this.add.follower(circlePath_4, 400, 300, 'blue_circle');
 
 
-        this.physics.world.enable(ball1)
-        this.physics.world.enable(ball2)
-        this.physics.world.enable(ball3)
-        this.physics.world.enable(ball4)
+        this.physics.world.enable(this.ball1)
+        this.physics.world.enable(this.ball2)
+        this.physics.world.enable(this.ball3)
+        this.physics.world.enable(this.ball4)
 
-        ball1.body.setCircle(32)
-        ball2.body.setCircle(32)
-        ball3.body.setCircle(32)
-        ball4.body.setCircle(32)
+        this.ball1.body.setCircle(32)
+        this.ball2.body.setCircle(32)
+        this.ball3.body.setCircle(32)
+        this.ball4.body.setCircle(32)
 
-        ball1.startFollow({
+        this.ball1.startFollow({
             repeat: 100000,
             duration: 3000,
         });
-        ball2.startFollow({
+        this.ball2.startFollow({
             repeat: 100000,
             duration: 3000,
         });
-        ball3.startFollow({
+        this.ball3.startFollow({
             repeat: 100000,
             duration: 3000,
         });
-        ball4.startFollow({
+        this.ball4.startFollow({
             repeat: 100000,
             duration: 3000,
         });
         
 
-        this.physics.add.overlap(ball1, this.player, () => {
+        this.physics.add.overlap(this.ball1, this.player, () => {
             this.resetPlayer()
         })
-        this.physics.add.overlap(ball2, this.player, () => {
+        this.physics.add.overlap(this.ball2, this.player, () => {
             this.resetPlayer()
         })
-        this.physics.add.overlap(ball3, this.player, () => {
+        this.physics.add.overlap(this.ball3, this.player, () => {
             this.resetPlayer()
         })
-        this.physics.add.overlap(ball4, this.player, () => {
+        this.physics.add.overlap(this.ball4, this.player, () => {
             this.resetPlayer()
-        })
-        
-        this.btHome  = this.add.image(100, 100, 'home')
-        this.btSwitch = this.add.image(860, 100, 'pause')
-        
-        this.btHome.setInteractive()
-        this.btSwitch.setInteractive()
-
-        this.btHome.on('pointerdown', () => {
-            this.scene.start('main_screen')
         })
 
-        this.toggle = 1
-        this.btSwitch.on('pointerdown', () => {
-            // game is on, like to pause it
-            if (this.toggle === 1) {
-                ball1.pauseFollow()
-                ball2.pauseFollow()
-                ball3.pauseFollow()
-                ball4.pauseFollow()
-                this.toggle = 0
-                this.btSwitch.setTexture('play')
-            } else {
-                ball1.resumeFollow()
-                ball2.resumeFollow()
-                ball3.resumeFollow()
-                ball4.resumeFollow()
-                this.toggle = 1
-                this.btSwitch.setTexture('pause')
-            }
-        })
+        this.setUpHud()
+
         var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
         for(let i = 0; i < keys.length; i++){
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
@@ -207,7 +194,7 @@ export class Level3 extends Phaser.Scene {
         const coinPoints = map.getObjectLayer('coins')['objects']
         this.coins = this.add.group()
         console.log(typeof(this.coins))
-        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player)
+        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player, this.pickupAudio)
         this.coins = this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
     }
@@ -247,6 +234,7 @@ export class Level3 extends Phaser.Scene {
             this.coinGroup.numberOfCoinsCollected >= this.coinGroup.numberOfCoins) {
             console.log("reach end")
             gameState.levelCompletion[3] = true
+            this.killMusic()
             this.scene.start('level4')
         }
         if(this.ONE.isDown) this.scene.start('level1')
@@ -277,10 +265,54 @@ export class Level3 extends Phaser.Scene {
 
     resetPlayer() {
         this.player.numberOfShots = 3
-        // this.sound.play('hit')
+        this.hitAudio.play()
         this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
         this.player.body.x = this.startpoint.x
         this.player.body.y = this.startpoint.y
+    }
+
+    pauseMusic() { this.levelMusic.pause() }
+    resumeMusic() { this.levelMusic.resume() }
+    killMusic() { this.levelMusic.destroy() }
+
+    setUpHud() {
+        // 1 for play, 0 for pause
+        this.btHome  = this.add.image(100, 100, 'home')
+        this.btSwitch = this.add.image(860, 100, 'pause')
+        
+        this.btHome.setInteractive()
+        this.btSwitch.setInteractive()
+
+        this.btHome.on('pointerdown', () => {
+            this.clickAudio.play()
+            this.killMusic()
+            this.scene.start('main_screen')
+        })
+
+        this.toggle = 1
+        this.btSwitch.on('pointerdown', () => {
+            // game is on, like to pause it
+            if (this.toggle === 1) {
+                this.ball1.pauseFollow()
+                this.ball2.pauseFollow()
+                this.ball3.pauseFollow()
+                this.ball4.pauseFollow()
+                this.pauseMusic()
+                this.toggle = 0
+                this.btSwitch.setTexture('play')
+            } else {
+                this.ball1.resumeFollow()
+                this.ball2.resumeFollow()
+                this.ball3.resumeFollow()
+                this.ball4.resumeFollow()
+                this.resumeMusic()
+                this.toggle = 1
+                this.btSwitch.setTexture('pause')
+            }
+        })
+
+        this.shotText = this.add.text(200, 100, 'Number of Shots: 3')
+        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
     }
 }
