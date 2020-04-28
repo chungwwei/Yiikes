@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import tilesImg from "./assets/yiikes_tiles.png"
-import level_7_JSON from "./assets/level7.json";
+import level_9_JSON from "./assets/level9.json";
 import { Player } from "./player";
 import { gameState } from ".";
 import homeImg from "./assets/home_black_48x48.png";
@@ -16,17 +16,16 @@ var hitSound = require('./assets/audio/hit.ogg')
 var clickSound = require('./assets/audio/click.wav')
 var levelMusic = require('./assets/audio/IttyBitty8Bit.mp3')
 
-export class Level7 extends Phaser.Scene {
+export class Level9 extends Phaser.Scene {
     constructor() {
-        super('level7')
+        super('level9')
         this.player = null
-        this.spacebar = null
-        
+        this.spacebar = null    
     }
 
     preload() {
         this.load.image('tiles', tilesImg)
-        this.load.tilemapTiledJSON('map7', level_7_JSON)
+        this.load.tilemapTiledJSON('map9', level_9_JSON)
         this.load.image('home', homeImg)
         this.load.image('square', squareImg)
         this.load.image('play', playImg)
@@ -41,7 +40,7 @@ export class Level7 extends Phaser.Scene {
     }
 
     create() {
-        const map = this.make.tilemap({key: 'map7'})
+        const map = this.make.tilemap({key: 'map9'})
         const tiles = map.addTilesetImage('yiikes_tiles', 'tiles')
         this.backgroundLayer = map.createStaticLayer('background', tiles)
         this.foregroundLayer = map.createStaticLayer('foreground', tiles)
@@ -79,10 +78,10 @@ export class Level7 extends Phaser.Scene {
         this.keyPoints = map.getObjectLayer('key')['objects']
         this.setupKeys()
         //Add Player-Laser Collision
-        this.laserLayer.setCollisionBetween(21, 25, true, true)
-        this.physics.add.collider(this.player, this.laserLayer, () => {
-            this.resetPlayer()
-        })
+        // this.laserLayer.setCollisionBetween(21, 25, true, true)
+        // this.physics.add.collider(this.player, this.laserLayer, () => {
+        //     this.resetPlayer()
+        // })
         //Add 'Wall Layer Collision
         this.wallLayer.setCollisionBetween(25, 25, true, true)
         this.physics.add.collider(this.player, this.wallLayer, () => {
@@ -130,8 +129,7 @@ export class Level7 extends Phaser.Scene {
             this.xFollower.push(patrolFollower)
             this.physics.world.enable(patrolFollower)
             this.physics.add.collider(patrolFollower, this.player, () => {
-                this.player.body.x = this.startpoint.x
-                this.player.body.y = this.startpoint.y
+                this.resetPlayer();
             })   
         }
         //Add UI Buttons
@@ -200,16 +198,16 @@ export class Level7 extends Phaser.Scene {
             this.player.body.setVelocityX(0)
         }
         if (!this.isWallDestroyed && this.numberOfKeys < 1){
-            this.wallLayer.replaceByIndex(25, 5)
-            this.wallLayer.setCollisionBetween(5,5, false)
+            this.wallLayer.replaceByIndex(25, 17)
+            this.wallLayer.setCollisionBetween(17,17, false)
         }
         //Check if player reaches end of level
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) 
             && (this.numberOfKeys < 1)
             ) {
             console.log("reach end")
-            gameState.levelCompletion[7] = true
-            this.scene.start('level8')
+            gameState.levelCompletion[9] = true
+            this.scene.start('main_screen')
         }
         //Cheats Functionality
         if(this.ONE.isDown) this.scene.start('level1')
@@ -251,7 +249,7 @@ export class Level7 extends Phaser.Scene {
         this.player.body.x = this.startpoint.x
         this.player.body.y = this.startpoint.y
         this.setupKeys()
-        this.wallLayer.replaceByIndex(5, 25)
+        this.wallLayer.replaceByIndex(17, 25)
         this.wallLayer.setCollisionBetween(25, 25, true, true)
     }
     setupKeys(){
@@ -270,5 +268,4 @@ export class Level7 extends Phaser.Scene {
         }
         this.keys.children.iterate((c) => { c.setTexture('key') })
     }
-
 }
