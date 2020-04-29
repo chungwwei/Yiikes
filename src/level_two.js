@@ -181,8 +181,8 @@ export class Level2 extends Phaser.Scene {
             })   
         }
                 
-        var circlePath = new Phaser.Curves.Path(400, 500).circleTo(50);
-        this.ball1 = this.add.follower(circlePath, 750, 400, 'blue_circle');
+        var circlePath = new Phaser.Curves.Path(450, 500).circleTo(60);
+        this.ball1 = this.add.follower(circlePath, 800, 430, 'blue_circle');
 
         this.physics.world.enable(this.ball1)
         this.ball1.body.setCircle(32)
@@ -201,9 +201,6 @@ export class Level2 extends Phaser.Scene {
         for(let i = 0; i < keys.length; i++){
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
         }
-
-        this.shotText = this.add.text(200, 100, 'Number of Shots: 3')
-        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
 
         const coinPoints = map.getObjectLayer('coins')['objects']
         this.coins = this.add.group()

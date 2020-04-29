@@ -188,9 +188,6 @@ export class Level3 extends Phaser.Scene {
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
         }
 
-        this.shotText = this.add.text(200, 100, 'Number of Shots: 3')
-        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
-
         const coinPoints = map.getObjectLayer('coins')['objects']
         this.coins = this.add.group()
         console.log(typeof(this.coins))
