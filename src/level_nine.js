@@ -240,6 +240,7 @@ export class Level9 extends Phaser.Scene {
         //Updates Shooting UI
         this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
         this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
+        this.muteMusicSetUp()
     }
 
     resetPlayer() {
@@ -267,5 +268,19 @@ export class Level9 extends Phaser.Scene {
             })  
         }
         this.keys.children.iterate((c) => { c.setTexture('key') })
+    }
+
+    muteMusicSetUp() {
+        this.mKey = this.input.keyboard.addKey('M')
+        this.musicOn = 1
+        this.mKey.addListener('down', () => {
+            if (this.musicOn === 1) {
+                this.pauseMusic()
+                this.musicOn = 0
+            } else {
+                this.resumeMusic()
+                this.musicOn = 1
+            }
+        })
     }
 }

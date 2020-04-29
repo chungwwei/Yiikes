@@ -174,6 +174,7 @@ export class Level7 extends Phaser.Scene {
         //Initialize Text UI
         this.shotText = this.add.text(200, 100, 'Number of Shots: 3')
         this.coinText = this.add.text(400, 100, 'Coins collected: 0')
+        // this.muteMusicSetUp()
     }
 
     update(){
@@ -269,6 +270,20 @@ export class Level7 extends Phaser.Scene {
             })  
         }
         this.keys.children.iterate((c) => { c.setTexture('key') })
+    }
+
+    muteMusicSetUp() {
+        this.mKey = this.input.keyboard.addKey('M')
+        this.musicOn = 1
+        this.mKey.addListener('down', () => {
+            if (this.musicOn === 1) {
+                this.pauseMusic()
+                this.musicOn = 0
+            } else {
+                this.resumeMusic()
+                this.musicOn = 1
+            }
+        })
     }
 
 }

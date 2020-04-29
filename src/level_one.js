@@ -169,14 +169,14 @@ export class Level1 extends Phaser.Scene {
         }
 
         this.setUpHud()
-
+        this.muteMusicSetUp()
         const coinPoints = map.getObjectLayer('coins')['objects']
         this.coins = this.add.group()
         console.log(typeof(this.coins))
         this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player, this.pickupAudio)
         this.coins = this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
-
+        
     }
  
 
@@ -300,4 +300,17 @@ export class Level1 extends Phaser.Scene {
         this.coinText = this.add.text(400, 100, 'Coins collected: 0')
     }
 
+    muteMusicSetUp() {
+        this.mKey = this.input.keyboard.addKey('M')
+        this.musicOn = 1
+        this.mKey.addListener('down', () => {
+            if (this.musicOn === 1) {
+                this.pauseMusic()
+                this.musicOn = 0
+            } else {
+                this.resumeMusic()
+                this.musicOn = 1
+            }
+        })
+    }
 }

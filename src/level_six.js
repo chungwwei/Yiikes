@@ -242,7 +242,7 @@ export class Level6 extends Phaser.Scene {
         }
 
         this.setUpHud()
-
+        this.muteMusicSetUp()
         const coinPoints = map.getObjectLayer('coins')['objects']
         this.coins = this.add.group()
         console.log(typeof(this.coins))
@@ -396,5 +396,19 @@ export class Level6 extends Phaser.Scene {
 
         this.shotText = this.add.text(200, 100, 'Number of Shots: ' + this.numberofbullets)
         this.coinText = this.add.text(400, 100, 'Coins collected: 0')
+    }
+
+    muteMusicSetUp() {
+        this.mKey = this.input.keyboard.addKey('M')
+        this.musicOn = 1
+        this.mKey.addListener('down', () => {
+            if (this.musicOn === 1) {
+                this.pauseMusic()
+                this.musicOn = 0
+            } else {
+                this.resumeMusic()
+                this.musicOn = 1
+            }
+        })
     }
 }
