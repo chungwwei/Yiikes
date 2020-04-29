@@ -54,7 +54,8 @@ export class MainScene extends Phaser.Scene {
                 }
             }
             console.log(lastLevel)
-            this.scene.start('level' + (lastLevel + 1))
+            if(lastLevel === 9) this.scene.start('level' + (lastLevel))
+            else this.scene.start('level' + (lastLevel + 1))
         })
 
         this.btLevelSelect.on('pointerdown', () => {

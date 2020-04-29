@@ -10,6 +10,10 @@ import pauseImg from "./assets/pause_black_48x48.png"
 import coinImg from "./assets/coin.png"
 import keyImg from "./assets/key.png"
 import { CoinGroup } from "./coin_system";
+import dyingSheet from "./assets/dying.png"
+import idleSheet from "./assets/idle.png"
+import walkingSheet from "./assets/walking.png"
+import characterImg from './assets/character.png'
 
 var pickupSound = require('./assets/audio/pickup.wav')
 var hitSound = require('./assets/audio/hit.ogg')
@@ -32,6 +36,10 @@ export class Level8 extends Phaser.Scene {
         this.load.image('pause', pauseImg)
         this.load.image('coin', coinImg)
         this.load.image('key', keyImg)
+        this.load.spritesheet('dying_sheet', dyingSheet, { frameWidth: 25, frameHeight: 25 })
+        this.load.spritesheet('idle_sheet', idleSheet, { frameWidth: 25, frameHeight: 25 })
+        this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
+        this.load.image('character', characterImg)
 
         this.load.audio('hit', hitSound)
         this.load.audio('click', clickSound)
@@ -56,6 +64,34 @@ export class Level8 extends Phaser.Scene {
         this.endpoint = this.add.rectangle(pointB.x, pointB.y, pointB.width, pointB.height)
         this.player = new Player(this, this.startpoint.x, this.startpoint.y, 25, 25, this.foregroundLayer)
         this.physics.add.existing(this.player)
+        this.player.setTexture('character')
+        this.player.body.setSize(25, 25)
+        // Player animations
+        this.walkAnimation = this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('walk_sheet'),
+            frameRate: 10,
+            start:0,
+            end: 4,
+            repeat: -1
+        })
+        this.dyingAnimation = this.anims.create({
+            key: 'dying',
+            frames: this.anims.generateFrameNumbers('dying_sheet'),
+            start: 0,
+            end: 5,
+            frameRate: 60,
+            repeat: 0
+        })
+        this.idleAnimation = this.anims.create({
+            key: 'idle',
+            frames: this.anims.generateFrameNumbers('dying_sheet'),
+            frameRate: 6,
+            repeat: -1
+        })
+        this.player.anims.load('walk')
+        this.player.anims.load('idle')
+        this.player.anims.load('dying')
         //audio
         this.hitAudio = this.sound.add('hit')
         this.pickupAudio = this.sound.add('pickup')
@@ -132,37 +168,7 @@ export class Level8 extends Phaser.Scene {
                 this.resetPlayer();
             })   
         }
-        //Add UI Buttons
-        this.btHome  = this.add.image(100, 100, 'home')
-        this.btSwitch = this.add.image(860, 100, 'pause')
-        this.btHome.setInteractive()
-        this.btSwitch.setInteractive()
-        this.btHome.on('pointerdown', () => {
-            this.scene.start('main_screen')
-        })
-        //Pause Game
-        this.toggle = 1
-        this.btSwitch.on('pointerdown', () => {
-            if (this.toggle === 1) {
-                this.xFollower.forEach((f) => {
-                    f.pauseFollow()
-                })
-                this.yFollower.forEach((f) => {
-                    f.pauseFollow()
-                })
-                this.toggle = 0
-                this.btSwitch.setTexture('play')
-            } else {
-                this.xFollower.forEach((f) => {
-                    f.resumeFollow()
-                })
-                this.yFollower.forEach((f) => {
-                    f.resumeFollow()
-                })
-                this.toggle = 1
-                this.btSwitch.setTexture('pause')
-            }
-        })
+        this.setUpHud()
         //Initialize Level Skip Cheats
         var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
         for(let i = 0; i < keys.length; i++){
@@ -178,18 +184,22 @@ export class Level8 extends Phaser.Scene {
         //???????
         this.physics.collide(this.player, this.foregroundLayer)
         if (this.cursors.left.isDown) {
+            this.player.play('walk')
             this.player.update(-1)
         } if (this.cursors.right.isDown) {
+            this.player.play('walk')
             this.player.update(1)
         } if (this.cursors.up.isDown) {
+            this.player.play('walk')
             this.player.update(2)
         } if (this.cursors.down.isDown) {
+            this.player.play('walk')
             this.player.update(3)
         } else if (this.cursors.up.isUp && this.cursors.down.isUp &&
             this.cursors.left.isUp && this.cursors.right.isUp) {
             this.player.update(4)
         } else {
-            this.player.update()
+            this.player.update(100)
         }
         if (this.cursors.up.isUp && this.cursors.down.isUp) {
             this.player.body.setVelocityY(0)
@@ -207,18 +217,18 @@ export class Level8 extends Phaser.Scene {
             ) {
             console.log("reach end")
             gameState.levelCompletion[8] = true
-            this.scene.start('level9')
+            this.switchLevel('level9')
         }
         //Cheats Functionality
-        if(this.ONE.isDown) this.scene.start('level1')
-        if(this.TWO.isDown) this.scene.start('level2')
-        if(this.THREE.isDown) this.scene.start('level3')
-        if(this.FOUR.isDown) this.scene.start('level4')
-        if(this.FIVE.isDown) this.scene.start('level5')
-        if(this.SIX.isDown) this.scene.start('level6')
-        if(this.SEVEN.isDown) this.scene.start('level7')
-        if(this.EIGHT.isDown) this.scene.start('level8')
-        if(this.NINE.isDown) this.scene.start('level9')
+        if(this.ONE.isDown) this.switchLevel('level1')
+        if(this.TWO.isDown) this.switchLevel('level2')
+        if(this.THREE.isDown) this.switchLevel('level3')
+        if(this.FOUR.isDown) this.switchLevel('level4')
+        if(this.FIVE.isDown) this.switchLevel('level5')
+        if(this.SIX.isDown) this.switchLevel('level6')
+        if(this.SEVEN.isDown) this.switchLevel('level7')
+        if(this.EIGHT.isDown) this.switchLevel('level8')
+        if(this.NINE.isDown) this.switchLevel('level9')
         //Player shooting and teleporting input
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
             console.log("IM CALLED")
@@ -240,10 +250,15 @@ export class Level8 extends Phaser.Scene {
         //Updates Shooting UI
         this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
         this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
+        this.muteMusicSetUp()
     }
-
+    switchLevel(level) {
+        this.killMusic()
+        this.scene.start(level)
+    }
     resetPlayer() {
         this.player.numberOfShots = 3
+        this.hitAudio.play()
         this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
         this.player.body.x = this.startpoint.x
@@ -268,7 +283,50 @@ export class Level8 extends Phaser.Scene {
         }
         this.keys.children.iterate((c) => { c.setTexture('key') })
     }
+    pauseMusic() { this.levelMusic.pause() }
+    resumeMusic() { this.levelMusic.resume() }
+    killMusic() { this.levelMusic.destroy() }
+    setUpHud() {
+        this.btHome  = this.add.image(100, 100, 'home')
+        this.btSwitch = this.add.image(860, 100, 'pause')
+        
+        this.btHome.setInteractive()
+        this.btSwitch.setInteractive()
 
+        this.btHome.on('pointerdown', () => {
+            this.clickAudio.play()
+            this.killMusic()
+            this.scene.start('main_screen')
+        })
+
+        this.toggle = 1
+        this.btSwitch.on('pointerdown', () => {
+            if (this.toggle === 1) {
+                this.xFollower.forEach((f) => {
+                    f.pauseFollow()
+                })
+                this.yFollower.forEach((f) => {
+                    f.pauseFollow()
+                })
+                this.toggle = 0
+                this.pauseMusic()
+                this.btSwitch.setTexture('play')
+            } else {
+                this.xFollower.forEach((f) => {
+                    f.resumeFollow()
+                })
+                this.yFollower.forEach((f) => {
+                    f.resumeFollow()
+                })
+                this.toggle = 1
+                this.resumeMusic()
+                this.btSwitch.setTexture('pause')
+            }
+        })
+
+        this.shotText = this.add.text(200, 100, 'Number of Shots: ' + this.numberofbullets)
+        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
+    }
     muteMusicSetUp() {
         this.mKey = this.input.keyboard.addKey('M')
         this.musicOn = 1
