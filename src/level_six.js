@@ -27,6 +27,7 @@ export class Level6 extends Phaser.Scene {
         this.player = null
         this.spacebar = null
         this.bullet = null
+        this.numberofbullets = 5
     }
 
     preload() {
@@ -59,13 +60,17 @@ export class Level6 extends Phaser.Scene {
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
         const pointB = start_end_points[1]
+        const pointC = start_end_points[2]
         this.startpoint = this.add.rectangle(pointA.x, pointA.y, pointA.width, pointA.height)
         this.endpoint = this.add.rectangle(pointB.x, pointB.y, pointB.width, pointB.height)
         this.endpoint.setOrigin(0)
+        this.checkpoint = this.add.rectangle(pointC.x, pointC.y, pointC.width, pointC.height)
+        this.checkpoint.setOrigin(.5)
         this.physics.add.existing(this.endpoint)
         // Player
         this.player = new Player(this, this.startpoint.x, this.startpoint.y, 
                                     25, 25, this.foregroundLayer)
+        this.player.numberOfShots = this.numberofbullets
         this.physics.add.existing(this.player)
         this.player.setTexture('character')
         this.player.body.setSize(25, 25)
@@ -132,7 +137,7 @@ export class Level6 extends Phaser.Scene {
             var patrolFollower = this.add.follower(path, x_1, y_2, 'square');
             patrolFollower.startFollow({
                 repeat: -1,
-                duration: 1000,
+                duration: 1500,
                 yoyo: true
             })
             this.yFollower.push(patrolFollower)
@@ -153,7 +158,7 @@ export class Level6 extends Phaser.Scene {
             var patrolFollower = this.add.follower(path, x_1, y_2, 'square');
             patrolFollower.startFollow({
                 repeat: -1,
-                duration: 1000,
+                duration: 1500,
                 yoyo: true
             })
             this.xFollower.push(patrolFollower)
@@ -213,35 +218,23 @@ export class Level6 extends Phaser.Scene {
             this.resetPlayer()
         })
         // Waterpaths
-        this.waterPath = this.physics.add.group({
-            immovable: true
-        })
         const water_down = map.getObjectLayer('water_down')['objects']
-        for (let i = 0; i < water_down.length; i ++) {
-            let x = water_down[i].x
-            let y = water_down[i].y
-            let width = water_down[i].width
-            let height= water_down[i].height
-            let path = this.add.rectangle(x + width / 2, y + height / 2, width, height)
-            this.waterPath.add(path)
-            path.setAlpha(0)
-            this.physics.add.overlap(path, this.player, () => {
-                this.player.y += 1
-            })
-        }
+        let water_down1 = water_down[0]
+        this.wd1 = this.add.rectangle(water_down1.x, water_down1.y, water_down1.width, water_down1.height)
+        
         const water_right = map.getObjectLayer('water_right')['objects']
-        for (let i = 0; i < water_right.length; i ++) {
-            let x = water_right[i].x
-            let y = water_right[i].y
-            let width = water_right[i].width
-            let height= water_right[i].height
-            let path = this.add.rectangle(x + width / 2, y + height / 2, width, height)
-            this.waterPath.add(path)
-            path.setAlpha(0)
-            this.physics.add.overlap(path, this.player, () => {
-                this.player.x += 1
-            })
-        }
+        let water_right1 = water_right[0]
+        let water_right2 = water_right[1]
+        let water_right3 = water_right[2]
+        this.wr1 = this.add.rectangle(water_right1.x, water_right1.y, water_right1.width, water_right1.height)
+        this.wr2 = this.add.rectangle(water_right2.x, water_right2.y, water_right2.width, water_right2.height)
+        this.wr3 = this.add.rectangle(water_right3.x, water_right3.y, water_right3.width, water_right3.height)
+        
+        const water_left = map.getObjectLayer('water_left')['objects']
+        let water_left1 = water_left[0]
+        this.wl1 = this.add.rectangle(water_left1.x, water_left1.y, water_left1.width, water_left1.height)
+        let water_left2 = water_left[1]
+        this.wl2 = this.add.rectangle(water_left2.x, water_left2.y, water_left2.width, water_left2.height)
 
         var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
         for(let i = 0; i < keys.length; i++){
@@ -250,12 +243,12 @@ export class Level6 extends Phaser.Scene {
 
         this.setUpHud()
 
-        // const coinPoints = map.getObjectLayer('coins')['objects']
-        // this.coins = this.add.group()
-        // console.log(typeof(this.coins))
-        // this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player)
-        // this.coins = this.coinGroup.createCoins()
-        // this.coins.children.iterate((c) => { c.setTexture('coin') })
+        const coinPoints = map.getObjectLayer('coins')['objects']
+        this.coins = this.add.group()
+        console.log(typeof(this.coins))
+        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player, this.pickupAudio)
+        this.coins = this.coinGroup.createCoins()
+        this.coins.children.iterate((c) => { c.setTexture('coin') })
     }
 
 
@@ -294,7 +287,24 @@ export class Level6 extends Phaser.Scene {
             ) {
             console.log("reach end")
             gameState.levelCompletion[6] = true
-            this.scene.start('level7')
+            this.switchLevel('level7')
+        }
+        if (Phaser.Geom.Rectangle.Contains(this.checkpoint, this.player.x, this.player.y) 
+            ) {
+            this.startpoint = this.checkpoint
+            this.player.numberOfShots = 3
+        }
+        if (Phaser.Geom.Rectangle.Contains(this.wd1, this.player.x, this.player.y)){
+            this.player.y += 1
+        }
+        if (Phaser.Geom.Rectangle.Contains(this.wr1, this.player.x, this.player.y) ||
+            Phaser.Geom.Rectangle.Contains(this.wr2, this.player.x, this.player.y) ||
+            Phaser.Geom.Rectangle.Contains(this.wr3, this.player.x, this.player.y)){
+            this.player.x += 1
+        }
+        if (Phaser.Geom.Rectangle.Contains(this.wl1, this.player.x, this.player.y) ||
+            Phaser.Geom.Rectangle.Contains(this.wl2, this.player.x, this.player.y)){
+            this.player.x -= 1
         }
         if(this.ONE.isDown) this.switchLevel('level1')
         if(this.TWO.isDown) this.switchLevel('level2')
@@ -319,17 +329,17 @@ export class Level6 extends Phaser.Scene {
         }
 
         this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
-        // this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
+        this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
     }
     switchLevel(level) {
         this.killMusic()
         this.scene.start(level)
     }
     resetPlayer() {
-        this.player.numberOfShots = 3
+        this.player.numberOfShots = this.numberofbullets
         this.hitAudio.play()
-        // this.coinGroup.createCoins()
-        // this.coins.children.iterate((c) => { c.setTexture('coin') })
+        this.coinGroup.createCoins()
+        this.coins.children.iterate((c) => { c.setTexture('coin') })
         this.player.body.x = this.startpoint.x
         this.player.body.y = this.startpoint.y
     }
@@ -365,6 +375,7 @@ export class Level6 extends Phaser.Scene {
                 this.ball3.pauseFollow()
                 this.ball4.pauseFollow()
                 this.toggle = 0
+                this.pauseMusic()
                 this.btSwitch.setTexture('play')
             } else {
                 this.xFollower.forEach((f) => {
@@ -378,11 +389,12 @@ export class Level6 extends Phaser.Scene {
                 this.ball3.resumeFollow()
                 this.ball4.resumeFollow()
                 this.toggle = 1
+                this.resumeMusic()
                 this.btSwitch.setTexture('pause')
             }
         })
 
-        this.shotText = this.add.text(200, 100, 'Number of Shots: 3')
+        this.shotText = this.add.text(200, 100, 'Number of Shots: ' + this.numberofbullets)
         this.coinText = this.add.text(400, 100, 'Coins collected: 0')
     }
 }

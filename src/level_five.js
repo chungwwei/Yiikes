@@ -172,12 +172,12 @@ export class Level5 extends Phaser.Scene {
 
         this.setUpHud()
 
-        // const coinPoints = map.getObjectLayer('coins')['objects']
-        // this.coins = this.add.group()
-        // console.log(typeof(this.coins))
-        // this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player)
-        // this.coins = this.coinGroup.createCoins()
-        // this.coins.children.iterate((c) => { c.setTexture('coin') })
+        const coinPoints = map.getObjectLayer('coins')['objects']
+        this.coins = this.add.group()
+        console.log(typeof(this.coins))
+        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player, this.pickupAudio)
+        this.coins = this.coinGroup.createCoins()
+        this.coins.children.iterate((c) => { c.setTexture('coin') })
     }
 
 
@@ -212,11 +212,11 @@ export class Level5 extends Phaser.Scene {
         }
 
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) 
-            // && this.coinGroup.numberOfCoinsCollected >= this.coinGroup.numberOfCoins
+            && this.coinGroup.numberOfCoinsCollected >= this.coinGroup.numberOfCoins
             ) {
             console.log("reach end")
             gameState.levelCompletion[5] = true
-            this.scene.start('level6')
+            this.switchLevel('level6')
         }
         if(this.ONE.isDown) this.switchLevel('level1')
         if(this.TWO.isDown) this.switchLevel('level2')
@@ -241,7 +241,7 @@ export class Level5 extends Phaser.Scene {
         }
 
         this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
-        // this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
+        this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
         
     }
     switchLevel(level) {
@@ -251,8 +251,8 @@ export class Level5 extends Phaser.Scene {
     resetPlayer() {
         this.player.numberOfShots = 3
         this.hitAudio.play()
-        // this.coinGroup.createCoins()
-        // this.coins.children.iterate((c) => { c.setTexture('coin') })
+        this.coinGroup.createCoins()
+        this.coins.children.iterate((c) => { c.setTexture('coin') })
         this.player.body.x = this.startpoint.x
         this.player.body.y = this.startpoint.y
     }
@@ -284,6 +284,7 @@ export class Level5 extends Phaser.Scene {
                     f.pauseFollow()
                 })
                 this.toggle = 0
+                this.pauseMusic()
                 this.btSwitch.setTexture('play')
             } else {
                 this.xFollower.forEach((f) => {
@@ -293,10 +294,10 @@ export class Level5 extends Phaser.Scene {
                     f.resumeFollow()
                 })
                 this.toggle = 1
+                this.resumeMusic()
                 this.btSwitch.setTexture('pause')
             }
         })
-
         this.shotText = this.add.text(200, 100, 'Number of Shots: 3')
         this.coinText = this.add.text(400, 100, 'Coins collected: 0')
     }
