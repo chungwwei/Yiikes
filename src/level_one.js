@@ -160,9 +160,14 @@ export class Level1 extends Phaser.Scene {
             this.followers.push(patrolFollower)
             this.physics.add.overlap(patrolFollower, this.player, () => {
                 this.resetPlayer()
-            })   
+            })
         }
         
+        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
+        for(let i = 0; i < keys.length; i++){
+            this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
+        }
+
         this.setUpHud()
 
         const coinPoints = map.getObjectLayer('coins')['objects']
@@ -226,12 +231,24 @@ export class Level1 extends Phaser.Scene {
             else
                 this.player.blink()
         }
+        if(this.ONE.isDown) this.switchLevel('level1')
+        if(this.TWO.isDown) this.switchLevel('level2')
+        if(this.THREE.isDown) this.switchLevel('level3')
+        if(this.FOUR.isDown) this.switchLevel('level4')
+        if(this.FIVE.isDown) this.switchLevel('level5')
+        if(this.SIX.isDown) this.switchLevel('level6')
+        if(this.SEVEN.isDown) this.switchLevel('level7')
+        if(this.EIGHT.isDown) this.switchLevel('level8')
+        if(this.NINE.isDown) this.switchLevel('level9')
 
         this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
         this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
 
     }
-
+    switchLevel(level) {
+        this.killMusic()
+        this.scene.start(level)
+    }
     resetPlayer() {
         this.player.numberOfShots = 3
         this.hitAudio.play()

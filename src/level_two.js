@@ -259,15 +259,15 @@ export class Level2 extends Phaser.Scene {
             this.player.speed = 80
         }
 
-        if(this.ONE.isDown) this.scene.start('level1')
-        if(this.TWO.isDown) this.scene.start('level2')
-        if(this.THREE.isDown) this.scene.start('level3')
-        if(this.FOUR.isDown) this.scene.start('level4')
-        if(this.FIVE.isDown) this.scene.start('level5')
-        if(this.SIX.isDown) this.scene.start('level6')
-        if(this.SEVEN.isDown) this.scene.start('level7')
-        if(this.EIGHT.isDown) this.scene.start('level8')
-        if(this.NINE.isDown) this.scene.start('level9')
+        if(this.ONE.isDown) this.switchLevel('level1')
+        if(this.TWO.isDown) this.switchLevel('level2')
+        if(this.THREE.isDown) this.switchLevel('level3')
+        if(this.FOUR.isDown) this.switchLevel('level4')
+        if(this.FIVE.isDown) this.switchLevel('level5')
+        if(this.SIX.isDown) this.switchLevel('level6')
+        if(this.SEVEN.isDown) this.switchLevel('level7')
+        if(this.EIGHT.isDown) this.switchLevel('level8')
+        if(this.NINE.isDown) this.switchLevel('level9')
 
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
             console.log("IM CALLED")
@@ -284,7 +284,10 @@ export class Level2 extends Phaser.Scene {
         this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
         this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
     }
-
+    switchLevel(level) {
+        this.killMusic()
+        this.scene.start(level)
+    }
     resetPlayer() {
         this.player.numberOfShots = 3
         this.hitAudio.play()
