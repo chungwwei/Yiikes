@@ -292,7 +292,7 @@ export class Level6 extends Phaser.Scene {
         if (Phaser.Geom.Rectangle.Contains(this.checkpoint, this.player.x, this.player.y) 
             ) {
             this.startpoint = this.checkpoint
-            this.player.numberOfShots = 3
+            this.player.numberOfShots = this.numberofbullets
         }
         if (Phaser.Geom.Rectangle.Contains(this.wd1, this.player.x, this.player.y)){
             this.player.y += 1
