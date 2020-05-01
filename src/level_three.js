@@ -14,10 +14,13 @@ import walkingSheet from "./assets/walking.png"
 import characterImg from './assets/character.png'
 import coinImg from './assets/coin.png'
 import { CoinGroup } from "./coin_system";
+import { createCirclePathFollower, createMutilpleSplineFollower, createCirclePathFollowers, createSplineFollower } from "./followers/polygon_follower";
 var pickupSound = require('./assets/audio/pickup.wav')
 var hitSound = require('./assets/audio/hit.ogg')
 var clickSound = require('./assets/audio/click.wav')
 var levelMusic = require('./assets/audio/IttyBitty8Bit.mp3')
+import cyanCircle from "./assets/cyan_circle_32.png"
+import pinkCircle from "./assets/pink_circle_32.png"
 export class Level3 extends Phaser.Scene {
     
     constructor() {
@@ -41,6 +44,8 @@ export class Level3 extends Phaser.Scene {
         this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.image('character', characterImg)
         this.load.image('coin', coinImg)
+        this.load.image('cyan_circle', cyanCircle)
+        this.load.image('pink_circle', pinkCircle)
 
         this.load.audio('hit', hitSound)
         this.load.audio('click', clickSound)
@@ -129,58 +134,6 @@ export class Level3 extends Phaser.Scene {
             allowGravity: false,
         })
 
-        var circlePath_1 = new Phaser.Curves.Path(400, 500).circleTo(50)
-        var circlePath_2 = new Phaser.Curves.Path(450, 400).circleTo(120)
-        var circlePath_3 = new Phaser.Curves.Path(550, 350).circleTo(130)
-        var circlePath_4 = new Phaser.Curves.Path(500, 300).circleTo(100)
-
-        this.ball1 = this.add.follower(circlePath_1, 700, 500, 'blue_circle');
-        this.ball2 = this.add.follower(circlePath_2, 450, 600, 'blue_circle')
-        this.ball3 = this.add.follower(circlePath_3, 500, 350, 'blue_circle');
-        this.ball4 = this.add.follower(circlePath_4, 400, 300, 'blue_circle');
-
-
-        this.physics.world.enable(this.ball1)
-        this.physics.world.enable(this.ball2)
-        this.physics.world.enable(this.ball3)
-        this.physics.world.enable(this.ball4)
-
-        this.ball1.body.setCircle(32)
-        this.ball2.body.setCircle(32)
-        this.ball3.body.setCircle(32)
-        this.ball4.body.setCircle(32)
-
-        this.ball1.startFollow({
-            repeat: 100000,
-            duration: 3000,
-        });
-        this.ball2.startFollow({
-            repeat: 100000,
-            duration: 3000,
-        });
-        this.ball3.startFollow({
-            repeat: 100000,
-            duration: 3000,
-        });
-        this.ball4.startFollow({
-            repeat: 100000,
-            duration: 3000,
-        });
-        
-
-        this.physics.add.overlap(this.ball1, this.player, () => {
-            this.resetPlayer()
-        })
-        this.physics.add.overlap(this.ball2, this.player, () => {
-            this.resetPlayer()
-        })
-        this.physics.add.overlap(this.ball3, this.player, () => {
-            this.resetPlayer()
-        })
-        this.physics.add.overlap(this.ball4, this.player, () => {
-            this.resetPlayer()
-        })
-
         this.setUpHud()
         this.muteMusicSetUp()
         var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
@@ -194,6 +147,22 @@ export class Level3 extends Phaser.Scene {
         this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player, this.pickupAudio)
         this.coins = this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
+
+        const cycle1Points = map.getObjectLayer('cycle1')['objects']
+        const circlePathPoints = map.getObjectLayer('circle_paths')['objects']
+        const LpathPoints = map.getObjectLayer('L_path')['objects']
+        this.cycleGroup = createMutilpleSplineFollower(this, cycle1Points, 3000, 'pink_circle')
+        this.circleGroup = createCirclePathFollowers(this, circlePathPoints, 2000, 45,'cyan_circle', false)
+        this.LPath = createSplineFollower(this, LpathPoints, 1500, 'pink_circle')
+        this.physics.add.overlap(this.cycleGroup, this.player, () => {
+            this.resetPlayer()
+        })
+        this.physics.add.overlap(this.circleGroup, this.player, () => {
+            this.resetPlayer()
+        })
+        this.physics.add.overlap(this.LPath, this.player, () => {
+            this.resetPlayer()
+        })
     }
 
 
@@ -294,18 +263,16 @@ export class Level3 extends Phaser.Scene {
         this.btSwitch.on('pointerdown', () => {
             // game is on, like to pause it
             if (this.toggle === 1) {
-                this.ball1.pauseFollow()
-                this.ball2.pauseFollow()
-                this.ball3.pauseFollow()
-                this.ball4.pauseFollow()
+                this.cycleGroup.children.iterate((c) => { c.pauseFollow() })
+                this.circleGroup.children.iterate((c) => { c.pauseFollow() })
+                this.LPath.pauseFollow()
                 this.pauseMusic()
                 this.toggle = 0
                 this.btSwitch.setTexture('play')
             } else {
-                this.ball1.resumeFollow()
-                this.ball2.resumeFollow()
-                this.ball3.resumeFollow()
-                this.ball4.resumeFollow()
+                this.cycleGroup.children.iterate((c) => { c.resumeFollow() })
+                this.circleGroup.children.iterate((c) => { c.resumeFollow() })
+                this.LPath.resumeFollow()
                 this.resumeMusic()
                 this.toggle = 1
                 this.btSwitch.setTexture('pause')
