@@ -216,7 +216,7 @@ export class Level9 extends Phaser.Scene {
             ) {
             console.log("reach end")
             gameState.levelCompletion[9] = true
-            this.switchLevel('main_screen')
+            this.switchLevel('level10')
         }
         //Cheats Functionality
         if(this.ONE.isDown) this.switchLevel('level1')
