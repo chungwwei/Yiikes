@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { gameState } from ".";
 
 export class CoinGroup {
 
@@ -23,6 +24,7 @@ export class CoinGroup {
             c.body.setCircle(6)
             this.scene.physics.add.overlap(c, this.player, () => {
                 this.pickupAudio.play()
+                this.pickupAudio.volume = gameState.volume
                 this.numberOfCoinsCollected ++
                 c.destroy()
             })   

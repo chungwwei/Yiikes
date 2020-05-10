@@ -52,7 +52,7 @@ export class Level3 extends Phaser.Scene {
         this.load.audio('pickup', pickupSound)
         this.load.audio('music', levelMusic)
         this.levelMusic = this.sound.add('music')
-        this.levelMusic.play({loop: true})
+        this.levelMusic.play({loop: true, volume: gameState.volume })
     }
 
     create() {
@@ -285,15 +285,32 @@ export class Level3 extends Phaser.Scene {
 
     muteMusicSetUp() {
         this.mKey = this.input.keyboard.addKey('M')
-        this.musicOn = 1
+        this.jKey = this.input.keyboard.addKey('J')
+        this.kKey = this.input.keyboard.addKey('K')
         this.mKey.addListener('down', () => {
-            if (this.musicOn === 1) {
-                this.pauseMusic()
-                this.musicOn = 0
-            } else {
-                this.resumeMusic()
-                this.musicOn = 1
-            }
+            gameState.volume = 0
+            this.levelMusic.volume = 0
+            this.hitAudio.volume = 0
+            this.clickAudio.volume = 0
+            this.pickupAudio.volume = 0
+        })
+
+        this.jKey.addListener('down', () => {
+            gameState.volume = gameState.volume - 0.1
+            if (gameState.volume <= 0) gameState.volume = 0
+            this.levelMusic.volume = gameState.volume
+            this.hitAudio.volume = gameState.volume
+            this.clickAudio.volume = gameState.volume
+            this.pickupAudio.volume = gameState.volume
+        })
+
+        this.kKey.addListener('down', () => {
+            gameState.volume = gameState.volume + 0.1
+            if (gameState.volume >= 1) gameState.volume = 1
+            this.levelMusic.volume = gameState.volume
+            this.hitAudio.volume = gameState.volume
+            this.clickAudio.volume = gameState.volume
+            this.pickupAudio.volume = gameState.volume
         })
     }
 }
