@@ -112,10 +112,10 @@ export class Level6 extends Phaser.Scene {
         })
         this.player.setInteractive()
         // Set up sounds and music
-        this.hitAudio = this.sound.add('hit')
-        this.pickupAudio = this.sound.add('pickup')
-        this.clickAudio = this.sound.add('click')
-        this.levelMusic = this.sound.add('music')
+        this.hitAudio = this.sound.add('hit', {volume: gameState.volume})
+        this.pickupAudio = this.sound.add('pickup', {volume: gameState.volume})
+        this.clickAudio = this.sound.add('click', {volume: gameState.volume})
+        this.levelMusic = this.sound.add('music', {volume: gameState.volume})
         this.levelMusic.play({loop: true, volume: gameState.volume})
         // Spacebar set up
         this.cursors = this.input.keyboard.createCursorKeys()
@@ -320,7 +320,7 @@ export class Level6 extends Phaser.Scene {
             console.log("IM CALLED")
             let bullet = this.player.getBullet()
             console.log("bullet is null?: " + bullet)
-            if (bullet == null && this.player.numberOfShots > 0) {
+            if (bullet == null) {
                 this.player.numberOfShots --
                 this.player.fireBullet()
             }
@@ -328,7 +328,7 @@ export class Level6 extends Phaser.Scene {
                 this.player.blink()
         }
 
-        this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
+
         this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
     }
     switchLevel(level) {
@@ -336,7 +336,8 @@ export class Level6 extends Phaser.Scene {
         this.scene.start(level)
     }
     resetPlayer() {
-        this.player.numberOfShots = this.numberofbullets
+        gameState.death += 1
+        this.deathText.setText('Death: ' + gameState.death)
         this.hitAudio.play()
         this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
@@ -394,7 +395,8 @@ export class Level6 extends Phaser.Scene {
             }
         })
 
-        this.shotText = this.add.text(200, 100, 'Number of Shots: ' + this.numberofbullets)
+        // this.shotText = this.add.text(200, 100, 'Number of Shots: ' + this.numberofbullets)
+        this.deathText= this.add.text(200, 100, 'Death: ' + gameState.death)
         this.coinText = this.add.text(400, 100, 'Coins collected: 0')
     }
 

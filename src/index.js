@@ -39,8 +39,7 @@ export var gameState = {
                       false, false, false,
                       false, false, false],
   volume: 0.5,
-  lastMutedVolume: 0,
-  musicOn: 1
+  death: 0
 }
 
 function preload() {
