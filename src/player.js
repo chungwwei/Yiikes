@@ -26,7 +26,6 @@ export class Player extends Phaser.GameObjects.Sprite {
     }
 
     fireBullet() {
-        console.log(this.bullet)
         if (this.fireCoolDown <= 0 && this.bullet === null) {
             console.log("fire bullet")
             this.bullet = new Projectile(this.scene, this.x, this.y, 20, 20, this.direction)
@@ -43,6 +42,26 @@ export class Player extends Phaser.GameObjects.Sprite {
         }
 
 
+    }
+    
+    fireBulletBridge(group) {
+        if (this.fireCoolDown <= 0 && this.bullet === null) {
+            this.bullet = new Projectile(this.scene, this.x, this.y, 20, 20, this.direction)
+            this.fireCoolDown = 30
+            this.scene.physics.add.collider(
+                this.bullet, 
+                this.foregroundLayer, 
+                (bullet, layer) => {
+                    this.bullet.destroy()
+                    this.bullet = null
+                    this.fireCoolDown = -1;
+                })
+            this.scene.physics.add.collider(this.bullet, group, () => {
+                this.bullet.destroy()
+                this.bullet = null
+                this.fireCoolDown = -1;
+            })
+        }
     }
 
     blink() {

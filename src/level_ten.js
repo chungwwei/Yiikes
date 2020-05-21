@@ -202,7 +202,7 @@ export class Level10 extends Phaser.Scene {
             console.log("bullet is null?: " + bullet)
             if (bullet == null) {
                 this.player.numberOfShots --
-                this.player.fireBullet()
+                this.player.fireBulletBridge(this.bridges)
             }
             else
                 this.player.blink()
