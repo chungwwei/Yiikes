@@ -32,7 +32,7 @@ export class Level10 extends Phaser.Scene {
     preload() {
         console.log('loading')
         this.load.image('tiles', tilesImg)
-        this.load.tilemapTiledJSON('map', level_10_JSON)
+        this.load.tilemapTiledJSON('map10', level_10_JSON)
         this.load.image('play', playImg)
         this.load.image('pause', pauseImg)
         this.load.image('home', homeImg)
@@ -51,13 +51,13 @@ export class Level10 extends Phaser.Scene {
     }
 
     create() {
-        const map = this.make.tilemap({key: 'map'})
+        const map = this.make.tilemap({key: 'map10'})
         const tiles = map.addTilesetImage('yiikes_tiles', 'tiles')
         this.backgroundLayer = map.createDynamicLayer('background', tiles)
         this.foregroundLayer = map.createDynamicLayer('foreground', tiles, 0, 0, 60 * 16, 60 * 16, 16, 16)
         this.bridgeLayer     = map.createBlankDynamicLayer('bridges', tiles, 0, 0, 60 * 16, 60 * 16, 16, 16)
 
-
+        console.log(map.objects)
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
         const pointB = start_end_points[1]
@@ -261,11 +261,13 @@ export class Level10 extends Phaser.Scene {
                 this.enemiesGroup.children.iterate(f => { f.pauseFollow()})
                 this.pauseMusic()
                 this.toggle = 0
+                this.player.speed = 0
                 this.btSwitch.setTexture('play')
             } else {
                 this.follower.resumeFollow()
                 this.enemiesGroup.children.iterate(f => { f.resumeFollow()})
                 this.resumeMusic()
+                this.player.speed = 80
                 this.toggle = 1
                 this.btSwitch.setTexture('pause')
             }
