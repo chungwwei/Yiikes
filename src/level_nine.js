@@ -12,8 +12,10 @@ import keyImg from "./assets/key.png"
 import { CoinGroup } from "./coin_system";
 import dyingSheet from "./assets/dying.png"
 import idleSheet from "./assets/idle.png"
+import menu from "./assets/menu.png"
 import walkingSheet from "./assets/walking.png"
 import characterImg from './assets/character.png'
+
 
 var pickupSound = require('./assets/audio/pickup.wav')
 var hitSound = require('./assets/audio/hit.ogg')
@@ -38,6 +40,7 @@ export class Level9 extends Phaser.Scene {
         this.load.image('pause', pauseImg)
         this.load.image('coin', coinImg)
         this.load.image('key', keyImg)
+        this.load.image('menu', menu)
         this.load.spritesheet('dying_sheet', dyingSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.spritesheet('idle_sheet', idleSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
@@ -317,7 +320,7 @@ export class Level9 extends Phaser.Scene {
             this.killMusic()
             this.scene.start('main_screen')
         })
-
+        //Pause Mechanic
         this.toggle = 1
         this.btSwitch.on('pointerdown', () => {
             if (this.toggle === 1) {
@@ -327,6 +330,10 @@ export class Level9 extends Phaser.Scene {
                 this.yFollower.forEach((f) => {
                     f.pauseFollow()
                 })
+                //Pause UI
+                this.menu = this.add.sprite(960/2, 960/2, 'menu');
+                this.choiceLabel = this.add.text(960/2 - 50, 960/2-150, 'Pause', { font: '30px Arial', fill: '#000' });
+                
                 this.toggle = 0
                 this.pauseMusic()
                 this.btSwitch.setTexture('play')
@@ -337,6 +344,8 @@ export class Level9 extends Phaser.Scene {
                 this.yFollower.forEach((f) => {
                     f.resumeFollow()
                 })
+                this.menu.destroy();
+                this.choiceLabel.destroy();
                 this.toggle = 1
                 this.resumeMusic()
                 this.btSwitch.setTexture('pause')
