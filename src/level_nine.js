@@ -17,6 +17,9 @@ import walkingSheet from "./assets/walking.png"
 import characterImg from './assets/character.png'
 import starImg from "./assets/star.png"
 import emptyStarImg from "./assets/empty_star.png"
+import homeButtonImg from "./assets/home_button.png"
+import playButtonImg from "./assets/play_button.png"
+import restartButtonImg from "./assets/restart_button.png"
 
 
 var pickupSound = require('./assets/audio/pickup.wav')
@@ -49,6 +52,9 @@ export class Level9 extends Phaser.Scene {
         this.load.image('character', characterImg)
         this.load.image('star', starImg)
         this.load.image('empty_star', emptyStarImg)
+        this.load.image('play_button', playButtonImg)
+        this.load.image('home_button', homeButtonImg)
+        this.load.image('restart_button', restartButtonImg)
 
         this.load.audio('hit', hitSound)
         this.load.audio('click', clickSound)
@@ -354,28 +360,50 @@ export class Level9 extends Phaser.Scene {
                     this.star2 = this.add.sprite(960/2, 400, 'empty_star')
                     this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
                 }
+                this.playButton = this.add.sprite(960/2 + 175, 650, 'play_button')
+                this.restartButton = this.add.sprite(960/2, 650, 'restart_button')
+                this.homeButton = this.add.sprite(960/2 - 175, 650, 'home_button')
+                this.playButton.setInteractive()
+                this.restartButton.setInteractive()
+                this.homeButton.setInteractive()
+                this.playButton.on('pointerdown', () => {
+                    this.unpause()
+                })
+                this.homeButton.on('pointerdown', () => {
+                    this.killMusic()
+                    this.scene.start('main_screen')
+                })
+                this.restartButton.on('pointerdown', () => {
+                    this.switchLevel('level9')
+                })
                 this.toggle = 0
                 this.pauseMusic()
                 this.btSwitch.setTexture('play')
                 this.player.speed = 0
             } else {
-                this.xFollower.forEach((f) => {
-                    f.resumeFollow()
-                })
-                this.yFollower.forEach((f) => {
-                    f.resumeFollow()
-                })
-                this.menu.destroy();
-                this.choiceLabel.destroy();
-                this.star1.destroy();
-                this.star2.destroy();
-                this.star3.destroy();
-                this.toggle = 1
-                this.resumeMusic()
-                this.btSwitch.setTexture('pause')
-                this.player.speed = 80
+                this.unpause()
             }
         })
+    }
+    unpause() {
+        this.xFollower.forEach((f) => {
+            f.resumeFollow()
+        })
+        this.yFollower.forEach((f) => {
+            f.resumeFollow()
+        })
+        this.menu.destroy();
+        this.choiceLabel.destroy();
+        this.star1.destroy();
+        this.star2.destroy();
+        this.star3.destroy();
+        this.playButton.destroy()
+        this.restartButton.destroy()
+        this.homeButton.destroy()
+        this.toggle = 1
+        this.resumeMusic()
+        this.btSwitch.setTexture('pause')
+        this.player.speed = 80
     }
     muteMusicSetUp() {
         this.mKey = this.input.keyboard.addKey('M')
