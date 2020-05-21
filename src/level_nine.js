@@ -232,12 +232,15 @@ export class Level9 extends Phaser.Scene {
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) 
             && (this.numberOfKeys < 1)
             ) {
-            if(this.shotsFired <= this.starThreshold.threeStar){
+            if(this.coinGroup.numberOfCoinsCollected != 8){
+                if(gameState.starSystem.getLevel(9) < 1){
+                    gameState.starSystem.setStars(9, 1)
+                }
+            } else if(this.shotsFired <= this.starThreshold.threeStar){
                 if(gameState.starSystem.getLevel(9) < 3){
                     gameState.starSystem.setStars(9, 3)
                 }
-            }
-            else if((this.shotsFired > this.starThreshold.threeStar) && (this.shotsFired < this.starThreshold.twoStar)){
+            } else if((this.shotsFired > this.starThreshold.threeStar) && (this.shotsFired < this.starThreshold.twoStar)){
                 if(gameState.starSystem.getLevel(9) < 2){
                     gameState.starSystem.setStars(9, 2)
                 }
