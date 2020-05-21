@@ -15,6 +15,8 @@ import idleSheet from "./assets/idle.png"
 import menu from "./assets/menu.png"
 import walkingSheet from "./assets/walking.png"
 import characterImg from './assets/character.png'
+import starImg from "./assets/star.png"
+import emptyStarImg from "./assets/empty_star.png"
 
 
 var pickupSound = require('./assets/audio/pickup.wav')
@@ -45,6 +47,8 @@ export class Level9 extends Phaser.Scene {
         this.load.spritesheet('idle_sheet', idleSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.image('character', characterImg)
+        this.load.image('star', starImg)
+        this.load.image('empty_star', emptyStarImg)
 
         this.load.audio('hit', hitSound)
         this.load.audio('click', clickSound)
@@ -227,7 +231,7 @@ export class Level9 extends Phaser.Scene {
                     gameState.starSystem.setStars(9, 3)
                 }
             }
-            else if((this.shotsFired >= this.starThreshold.twoStar) && (this.shotsFired < this.starThreshold.oneStar)){
+            else if((this.shotsFired > this.starThreshold.threeStar) && (this.shotsFired < this.starThreshold.twoStar)){
                 if(gameState.starSystem.getLevel(9) < 2){
                     gameState.starSystem.setStars(9, 2)
                 }
@@ -332,8 +336,24 @@ export class Level9 extends Phaser.Scene {
                 })
                 //Pause UI
                 this.menu = this.add.sprite(960/2, 960/2, 'menu');
-                this.choiceLabel = this.add.text(960/2 - 50, 960/2-150, 'Pause', { font: '30px Arial', fill: '#000' });
-                
+                this.choiceLabel = this.add.text(960/2 - 50, 960/2-200, 'Pause', { font: '30px Arial', fill: '#000' });
+                if(gameState.starSystem.getLevel(9) == 3){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'star')
+                } else if (gameState.starSystem.getLevel(9) == 2){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                } else if (gameState.starSystem.getLevel(9) == 1){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                } else {
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'empty_star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                }
                 this.toggle = 0
                 this.pauseMusic()
                 this.btSwitch.setTexture('play')
@@ -347,6 +367,9 @@ export class Level9 extends Phaser.Scene {
                 })
                 this.menu.destroy();
                 this.choiceLabel.destroy();
+                this.star1.destroy();
+                this.star2.destroy();
+                this.star3.destroy();
                 this.toggle = 1
                 this.resumeMusic()
                 this.btSwitch.setTexture('pause')
