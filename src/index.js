@@ -15,6 +15,7 @@ import { HelpScene } from "./help_screen";
 import { MainScene } from "./main_screen";
 import { LoadScene } from "./load_screen";
 import { Level10 } from "./level_ten";
+import { Level11 } from "./level_eleven";
 import { StarSystem } from "./star_system";
 //TODO: ADD PAUSE MENU
 //TODO: ADD NEXT LEVEL MENU*
@@ -32,7 +33,7 @@ const config = {
     }
   },
   // scene: [MenuScene, ControlScene, Level1]
-  scene: [LoadScene, MainScene, LevelSelectScene, ControlScene, HelpScene, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8, Level9, Level10],
+  scene: [Level11, LoadScene, MainScene, LevelSelectScene, ControlScene, HelpScene, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8, Level9, Level10],
 };
 
 export const game = new Phaser.Game(config);
