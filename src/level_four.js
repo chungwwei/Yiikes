@@ -295,6 +295,7 @@ export class Level4 extends Phaser.Scene {
                     f.pauseFollow()
                 })
                 this.ball1.pauseFollow()
+                this.player.speed = 0
                 this.pauseMusic()
                 this.toggle = 0
                 this.btSwitch.setTexture('play')
@@ -306,6 +307,7 @@ export class Level4 extends Phaser.Scene {
                     f.resumeFollow()
                 })
                 this.ball1.resumeFollow()
+                this.player.speed = 80
                 this.resumeMusic()
                 this.toggle = 1
                 this.btSwitch.setTexture('pause')

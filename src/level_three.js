@@ -267,6 +267,7 @@ export class Level3 extends Phaser.Scene {
                 this.cycleGroup.children.iterate((c) => { c.pauseFollow() })
                 this.circleGroup.children.iterate((c) => { c.pauseFollow() })
                 this.LPath.pauseFollow()
+                this.player.speed = 0
                 this.pauseMusic()
                 this.toggle = 0
                 this.btSwitch.setTexture('play')
@@ -274,6 +275,7 @@ export class Level3 extends Phaser.Scene {
                 this.cycleGroup.children.iterate((c) => { c.resumeFollow() })
                 this.circleGroup.children.iterate((c) => { c.resumeFollow() })
                 this.LPath.resumeFollow()
+                this.player.speed = 80
                 this.resumeMusic()
                 this.toggle = 1
                 this.btSwitch.setTexture('pause')
