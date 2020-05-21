@@ -32,7 +32,9 @@ export class Level2 extends Phaser.Scene {
         super('level2')
         this.player = null
         this.spacebar = null
+        this.starThreshold = {oneStar: 30, twoStar: 20, threeStar: 15}
         this.bullet = null
+        this.shotsFired = 0
     }
 
     preload() {
@@ -255,8 +257,28 @@ export class Level2 extends Phaser.Scene {
             this.player.body.setVelocityX(0)
         }
 
-        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) &&
-            this.coinGroup.numberOfCoinsCollected >= this.coinGroup.numberOfCoins) {
+        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
+            if(this.coinGroup.numberOfCoinsCollected != 3){
+                if(gameState.starSystem.getLevel(2) < 1){
+                    gameState.starSystem.setStars(2, 1)
+                }
+            }
+            else if(this.shotsFire <= this.starThreshold.threeStar){
+                if(gameState.starSystem.getLevel(2) < 3){
+                    gameState.starSystem.setStars(2, 3)
+                }
+            }
+            else if((this.shotsFire > this.starThreshold.threeStar) && (this.shotsFire < this.starThreshold.twoStar)){
+                if(gameState.starSystem.getLevel(2) < 2){
+                    gameState.starSystem.setStars(2, 2)
+                }
+            } else {
+                if(gameState.starSystem.getLevel(2) < 1){
+                    gameState.starSystem.setStars(2, 1)
+                }
+            }
+
+            this.shotsFired = 0
             console.log("reach end")
             gameState.levelCompletion[2] = true
             this.killMusic()
@@ -288,12 +310,13 @@ export class Level2 extends Phaser.Scene {
             console.log("bullet is null?: " + bullet)
             if (bullet == null) {
                 this.player.fireBullet()
+                this.shotsFired += 1
             }
             else
                 this.player.blink()
         }
 
-
+        this.shotText.setText('Shots: ' + this.shotsFired)
         this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
     }
     switchLevel(level) {
@@ -386,6 +409,7 @@ export class Level2 extends Phaser.Scene {
 
         this.deathText= this.add.text(200, 100, 'Death: ' + gameState.death)
         this.coinText = this.add.text(400, 100, 'Coins collected: 0')
+        this.shotText = this.add.text(600, 100, 'Shots: ' + this.shotsFired)
     }
 
     unpause() {
