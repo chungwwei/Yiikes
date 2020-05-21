@@ -179,7 +179,7 @@ export class Level1 extends Phaser.Scene {
             })
         }
         
-        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
+        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE','ZERO','MINUS','PLUS']
         for(let i = 0; i < keys.length; i++){
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
         }
@@ -278,6 +278,9 @@ export class Level1 extends Phaser.Scene {
         if(this.SEVEN.isDown) this.switchLevel('level7')
         if(this.EIGHT.isDown) this.switchLevel('level8')
         if(this.NINE.isDown) this.switchLevel('level9')
+        if(this.ZERO.isDown) this.scene.start('level10')
+        if(this.MINUS.isDown) this.scene.start('level11')
+        if(this.PLUS.isDown) this.scene.start('level12')
 
 
         this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)

@@ -184,7 +184,7 @@ export class Level5 extends Phaser.Scene {
         this.coins = this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
 
-        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
+        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE','ZERO','MINUS','PLUS']
         for(let i = 0; i < keys.length; i++){
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
         }
@@ -198,8 +198,6 @@ export class Level5 extends Phaser.Scene {
 
 
     update() {
-        // this.physics.collide(this.player, this.spikesGroup, () => {this.player.x = 0; this.player.y = 0})
-        // this.physics.collide(this.player, this.foregroundLayer)
         if (this.cursors.left.isDown) {
             this.player.play('walk')
             this.player.update(-1)
@@ -260,6 +258,9 @@ export class Level5 extends Phaser.Scene {
         if(this.SEVEN.isDown) this.switchLevel('level7')
         if(this.EIGHT.isDown) this.switchLevel('level8')
         if(this.NINE.isDown) this.switchLevel('level9')
+        if(this.ZERO.isDown) this.scene.start('level10')
+        if(this.MINUS.isDown) this.scene.start('level11')
+        if(this.PLUS.isDown) this.scene.start('level12')
 
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
             console.log("IM CALLED")
