@@ -58,7 +58,7 @@ export function setUpBridgeTriggers(scene, bridgeTriggers, bridgeRects, foregrou
         bRect.setOrigin(0)
         bRect.body.setImmovable(true)
         scene.physics.add.collider(bRect, player, ()=>{})
-
+        bridgesGroup.add(bRect)
         // trigger is triggered
         scene.physics.add.overlap(rect, scene.player, () => {
             drawTiles(7, bridgeRects[i], foreground, rect)
