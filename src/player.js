@@ -5,7 +5,7 @@ export class Player extends Phaser.GameObjects.Sprite {
 
     constructor(scene, x, y, width, height, foreground) {
         super(scene, x, y, width, height)
-        this.speed = 80;
+        this.speed = 200;
         this.jumpSpeed = 150;
         this.bullet = null
         this.scene = scene

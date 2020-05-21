@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import tilesImg from "./assets/yiikes_tiles.png"
 import blueCircle from './assets/blue_circle.png';
-import level_11_JSON from "./assets/level11.json";
+import level_12_JSON from "./assets/level12.json";
 import { Player } from "./player";
 import homeImg from "./assets/home_black_48x48.png"
 import squareImg from "./assets/square.png"
@@ -23,10 +23,10 @@ var hitSound = require('./assets/audio/hit.ogg')
 var clickSound = require('./assets/audio/click.wav')
 var levelMusic = require('./assets/audio/IttyBitty8Bit.mp3')
 
-export class Level11 extends Phaser.Scene {
+export class Level12 extends Phaser.Scene {
     
     constructor() {
-        super('level11')
+        super('level12')
         this.player = null
         this.spacebar = null
         this.bullet = null
@@ -34,7 +34,7 @@ export class Level11 extends Phaser.Scene {
 
     preload() {
         this.load.image('tiles', tilesImg)
-        this.load.tilemapTiledJSON('map11', level_11_JSON)
+        this.load.tilemapTiledJSON('map12', level_12_JSON)
         this.load.image('play', playImg)
         this.load.image('pause', pauseImg)
         this.load.image('home', homeImg)
@@ -53,7 +53,7 @@ export class Level11 extends Phaser.Scene {
     }
 
     create() {
-        const map = this.make.tilemap({key: 'map11'})
+        const map = this.make.tilemap({key: 'map12'})
         const tiles = map.addTilesetImage('yiikes_tiles', 'tiles')
         this.backgroundLayer = map.createDynamicLayer('background', tiles)
         this.foregroundLayer = map.createDynamicLayer('foreground', tiles, 0, 0, 60 * 16, 60 * 16, 16, 16)
@@ -115,35 +115,17 @@ export class Level11 extends Phaser.Scene {
         // Spacebar set up
         this.cursors = this.input.keyboard.createCursorKeys()
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-        // Y patrols
-        const points = map.getObjectLayer('patrol_points_y')['objects']
-        this.yFollower = []
-        for (let i = 0; i < points.length; i += 2) {
-            let point_1 = points[i]
-            let point_2 = points[i + 1]
-            let x_1 = point_1.x, x_2 = point_2.x
-            let y_1 = point_1.y, y_2 = point_2.y
-            let path = new Phaser.Curves.Path(x_2, y_2).lineTo(x_1, y_1)
-            var patrolFollower = this.add.follower(path, x_1, y_2, 'square');
-            patrolFollower.startFollow({
-                repeat: -1,
-                duration: 1000,
-                yoyo: true
-            })
-            this.yFollower.push(patrolFollower)
-            this.physics.world.enable(patrolFollower)
-            this.physics.add.collider(patrolFollower, this.player, () => {
-                this.resetPlayer()
-            })   
-        }
 
         // SplinePoints Patrols
         const splinePoints = map.getObjectLayer('spline_points')['objects']
         const splinePoints2 = map.getObjectLayer('spline_points2')['objects']
+        const splinePoints3 = map.getObjectLayer('spline_points3')['objects']
         this.follower = createSplineFollower(this, splinePoints, 6000, 'square')
         this.follower2 = createSplineFollower(this, splinePoints2, 6000, 'square')
+        this.follower3 = createSplineFollower(this, splinePoints3, 4000, 'square')
         this.physics.add.overlap(this.follower, this.player, () => { this.resetPlayer() })
         this.physics.add.overlap(this.follower2, this.player, () => { this.resetPlayer() })
+        this.physics.add.overlap(this.follower3, this.player, () => { this.resetPlayer() })
 
         // Bridges
         this.bridgeTriggers = map.getObjectLayer('bridge_triggers')['objects']
@@ -205,7 +187,7 @@ export class Level11 extends Phaser.Scene {
             ) {
             console.log("reach end")
             gameState.levelCompletion[4] = true
-            this.switchLevel('level12')
+            this.switchLevel('main_screen')
         }
         if(this.ONE.isDown) this.switchLevel('level1')
         if(this.TWO.isDown) this.switchLevel('level2')
@@ -272,21 +254,17 @@ export class Level11 extends Phaser.Scene {
         this.btSwitch.on('pointerdown', () => {
             // game is on, like to pause it
             if (this.toggle === 1) {
-                this.yFollower.forEach((f) => {
-                    f.pauseFollow()
-                })
                 this.follower.pauseFollow()
                 this.follower2.pauseFollow()
+                this.follower3.pauseFollow()
                 this.player.speed = 0
                 this.pauseMusic()
                 this.toggle = 0
                 this.btSwitch.setTexture('play')
             } else {
-                this.yFollower.forEach((f) => {
-                    f.resumeFollow()
-                })
                 this.follower.resumeFollow()
                 this.follower2.resumeFollow()
+                this.follower3.resumeFollow()
                 this.player.speed = 80
                 this.resumeMusic()
                 this.toggle = 1
