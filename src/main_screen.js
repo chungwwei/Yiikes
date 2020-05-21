@@ -74,7 +74,7 @@ export class MainScene extends Phaser.Scene {
             game.destroy(true, true)
         })
 
-        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
+        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE','ZERO','MINUS','PLUS']
             for(let i = 0; i < keys.length; i++){
                 this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
             }
@@ -90,5 +90,8 @@ export class MainScene extends Phaser.Scene {
         if(this.SEVEN.isDown) this.scene.start('level7')
         if(this.EIGHT.isDown) this.scene.start('level8')
         if(this.NINE.isDown) this.scene.start('level9')
+        if(this.ZERO.isDown) this.scene.start('level10')
+        if(this.MINUS.isDown) this.scene.start('level11')
+        if(this.PLUS.isDown) this.scene.start('level12')
     }
 }

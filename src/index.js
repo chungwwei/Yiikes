@@ -34,12 +34,13 @@ const config = {
     }
   },
   // scene: [MenuScene, ControlScene, Level1]
-  scene: [Level12, LoadScene, MainScene, LevelSelectScene, ControlScene, HelpScene, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8, Level9, Level10, Level11],
+  scene: [LoadScene, MainScene, LevelSelectScene, ControlScene, HelpScene, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8, Level9, Level10, Level11, Level12],
 };
 
 export const game = new Phaser.Game(config);
 export var gameState = {
   levelCompletion: [true, false, false, 
+                      false, false, false,
                       false, false, false,
                       false, false, false],
   volume: 0.5,
