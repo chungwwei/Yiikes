@@ -15,6 +15,13 @@ import characterImg from './assets/character.png'
 import coinImg from './assets/coin.png'
 import { CoinGroup } from "./coin_system";
 import { createCirclePathFollower, createMutilpleSplineFollower, createCirclePathFollowers, createSplineFollower } from "./followers/polygon_follower";
+import starImg from "./assets/star.png"
+import emptyStarImg from "./assets/empty_star.png"
+import homeButtonImg from "./assets/home_button.png"
+import playButtonImg from "./assets/play_button.png"
+import restartButtonImg from "./assets/restart_button.png"
+import menu from "./assets/menu.png"
+
 var pickupSound = require('./assets/audio/pickup.wav')
 var hitSound = require('./assets/audio/hit.ogg')
 var clickSound = require('./assets/audio/click.wav')
@@ -46,6 +53,12 @@ export class Level3 extends Phaser.Scene {
         this.load.image('coin', coinImg)
         this.load.image('cyan_circle', cyanCircle)
         this.load.image('pink_circle', pinkCircle)
+        this.load.image('star', starImg)
+        this.load.image('empty_star', emptyStarImg)
+        this.load.image('play_button', playButtonImg)
+        this.load.image('home_button', homeButtonImg)
+        this.load.image('restart_button', restartButtonImg)
+        this.load.image('menu', menu)
 
         this.load.audio('hit', hitSound)
         this.load.audio('click', clickSound)
@@ -267,23 +280,77 @@ export class Level3 extends Phaser.Scene {
                 this.cycleGroup.children.iterate((c) => { c.pauseFollow() })
                 this.circleGroup.children.iterate((c) => { c.pauseFollow() })
                 this.LPath.pauseFollow()
-                this.player.speed = 0
-                this.pauseMusic()
+                // Pause UI
+                this.menu = this.add.sprite(960/2, 960/2, 'menu');
+                this.choiceLabel = this.add.text(960/2 - 50, 960/2-200, 'Pause', { font: '30px Arial', fill: '#000' });
+                if(gameState.starSystem.getLevel(3) == 3){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'star')
+                } else if (gameState.starSystem.getLevel(3) == 2){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                } else if (gameState.starSystem.getLevel(3) == 1){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                } else {
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'empty_star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                }
+                this.playButton = this.add.sprite(960/2 + 175, 650, 'play_button')
+                this.restartButton = this.add.sprite(960/2, 650, 'restart_button')
+                this.homeButton = this.add.sprite(960/2 - 175, 650, 'home_button')
+                this.playButton.setInteractive()
+                this.restartButton.setInteractive()
+                this.homeButton.setInteractive()
+                this.playButton.on('pointerdown', () => {
+                    this.unpause()
+                })
+                this.homeButton.on('pointerdown', () => {
+                    this.killMusic()
+                    this.scene.start('main_screen')
+                })
+                this.restartButton.on('pointerdown', () => {
+                    this.switchLevel('level3')
+                })
                 this.toggle = 0
+                this.pauseMusic()
                 this.btSwitch.setTexture('play')
+                this.player.speed = 0
             } else {
-                this.cycleGroup.children.iterate((c) => { c.resumeFollow() })
-                this.circleGroup.children.iterate((c) => { c.resumeFollow() })
-                this.LPath.resumeFollow()
-                this.player.speed = 80
-                this.resumeMusic()
-                this.toggle = 1
-                this.btSwitch.setTexture('pause')
+                this.unpause()
             }
         })
 
         this.deathText= this.add.text(200, 100, 'Death: ' + gameState.death)
         this.coinText = this.add.text(400, 100, 'Coins collected: 0')
+    }
+
+    unpause() {
+        this.cycleGroup.children.iterate((c) => { c.resumeFollow() })
+        this.circleGroup.children.iterate((c) => { c.resumeFollow() })
+        this.LPath.resumeFollow()
+
+        this.player.speed = 80
+        this.resumeMusic()
+        this.toggle = 1
+        this.btSwitch.setTexture('pause')
+
+        this.menu.destroy();
+        this.choiceLabel.destroy();
+        this.star1.destroy();
+        this.star2.destroy();
+        this.star3.destroy();
+        this.playButton.destroy()
+        this.restartButton.destroy()
+        this.homeButton.destroy()
+        this.toggle = 1
+        this.resumeMusic()
+        this.btSwitch.setTexture('pause')
+        this.player.speed = 80
     }
 
     muteMusicSetUp() {

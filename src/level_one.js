@@ -15,6 +15,13 @@ import characterImg from './assets/character.png'
 import coinImg from './assets/coin.png'
 import { CoinGroup } from "./coin_system";
 import { setUpAudioKeys } from "./keys";
+import starImg from "./assets/star.png"
+import emptyStarImg from "./assets/empty_star.png"
+import homeButtonImg from "./assets/home_button.png"
+import playButtonImg from "./assets/play_button.png"
+import restartButtonImg from "./assets/restart_button.png"
+import menu from "./assets/menu.png"
+
 var pickupSound = require('./assets/audio/pickup.wav')
 var hitSound = require('./assets/audio/hit.ogg')
 var clickSound = require('./assets/audio/click.wav')
@@ -42,6 +49,12 @@ export class Level1 extends Phaser.Scene {
         this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.image('character', characterImg)
         this.load.image('coin', coinImg)
+        this.load.image('star', starImg)
+        this.load.image('empty_star', emptyStarImg)
+        this.load.image('play_button', playButtonImg)
+        this.load.image('home_button', homeButtonImg)
+        this.load.image('restart_button', restartButtonImg)
+        this.load.image('menu', menu)
 
         this.load.audio('hit', hitSound)
         this.load.audio('click', clickSound)
@@ -219,7 +232,7 @@ export class Level1 extends Phaser.Scene {
             console.log("reach end")
             gameState.levelCompletion[1] = true
             this.killMusic()
-            this.scene.start('level10')
+            this.scene.start('level2')
             // this.scene.start('star_screen', {shots: 10, expectedShots: 3})
         }
         
@@ -286,23 +299,71 @@ export class Level1 extends Phaser.Scene {
                 this.followers.forEach((f) => {
                     f.pauseFollow()
                 })
-                this.player.speed = 0
-                this.pauseMusic()
-                this.toggle = 0
-                this.btSwitch.setTexture('play')
-            } else {
-                this.followers.forEach((f) => {
-                    f.resumeFollow()
+                //Pause UI
+                this.menu = this.add.sprite(960/2, 960/2, 'menu');
+                this.choiceLabel = this.add.text(960/2 - 50, 960/2-200, 'Pause', { font: '30px Arial', fill: '#000' });
+                if(gameState.starSystem.getLevel(1) == 3){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'star')
+                } else if (gameState.starSystem.getLevel(1) == 2){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                } else if (gameState.starSystem.getLevel(1) == 1){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                } else {
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'empty_star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                }
+                this.playButton = this.add.sprite(960/2 + 175, 650, 'play_button')
+                this.restartButton = this.add.sprite(960/2, 650, 'restart_button')
+                this.homeButton = this.add.sprite(960/2 - 175, 650, 'home_button')
+                this.playButton.setInteractive()
+                this.restartButton.setInteractive()
+                this.homeButton.setInteractive()
+                this.playButton.on('pointerdown', () => {
+                    this.unpause()
                 })
-                this.player.speed = 100
-                this.resumeMusic()
-                this.toggle = 1
-                this.btSwitch.setTexture('pause')
+                this.homeButton.on('pointerdown', () => {
+                    this.killMusic()
+                    this.scene.start('main_screen')
+                })
+                this.restartButton.on('pointerdown', () => {
+                    this.switchLevel('level1')
+                })
+                this.toggle = 0
+                this.pauseMusic()
+                this.btSwitch.setTexture('play')
+                this.player.speed = 0
+            } else {
+                this.unpause()
             }
         })
 
         this.deathText= this.add.text(200, 100, 'Death: ' + gameState.death)
         this.coinText = this.add.text(400, 100, 'Coins collected: 0')
+    }
+
+    unpause() {
+        this.followers.forEach((f) => {
+            f.resumeFollow()
+        })
+        this.menu.destroy();
+        this.choiceLabel.destroy();
+        this.star1.destroy();
+        this.star2.destroy();
+        this.star3.destroy();
+        this.playButton.destroy()
+        this.restartButton.destroy()
+        this.homeButton.destroy()
+        this.toggle = 1
+        this.resumeMusic()
+        this.btSwitch.setTexture('pause')
+        this.player.speed = 80
     }
 
     muteMusicSetUp() {
