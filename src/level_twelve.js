@@ -16,7 +16,12 @@ import walkingSheet from "./assets/walking.png"
 import characterImg from './assets/character.png'
 import { createSplineAccelerateFollower, createLaserTriggerFollower, createSplineFollower } from "./followers/polygon_follower";
 import { setUpBridgeTriggers, setUpEnemyTriggers, resetPlayerWithTilesRemoved } from "./triggers/triggers";
-
+import starImg from "./assets/star.png"
+import emptyStarImg from "./assets/empty_star.png"
+import homeButtonImg from "./assets/home_button.png"
+import playButtonImg from "./assets/play_button.png"
+import restartButtonImg from "./assets/restart_button.png"
+import menu from "./assets/menu.png"
 
 var pickupSound = require('./assets/audio/pickup.wav')
 var hitSound = require('./assets/audio/hit.ogg')
@@ -29,7 +34,8 @@ export class Level12 extends Phaser.Scene {
         super('level12')
         this.player = null
         this.spacebar = null
-        this.bullet = null
+        this.starThreshold = {oneStar: 10, twoStar: 7, threeStar: 3}
+        this.shotsFire = 0
     }
 
     preload() {
@@ -59,7 +65,6 @@ export class Level12 extends Phaser.Scene {
         this.foregroundLayer = map.createDynamicLayer('foreground', tiles, 0, 0, 60 * 16, 60 * 16, 16, 16)
         this.bridgeLayer     = map.createBlankDynamicLayer('bridges', tiles, 0, 0, 60 * 16, 60 * 16, 16, 16)
         // Spawn Points
-        console.log(map.objects)
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
         const pointB = start_end_points[1]
@@ -132,23 +137,25 @@ export class Level12 extends Phaser.Scene {
         this.bridgeRects    = map.getObjectLayer('bridges')['objects']
         this.bridgeTriggerGroup = this.add.group()
         this.bridges = this.add.group()
-        console.log(this.bridgeRects)
         setUpBridgeTriggers(this, this.bridgeTriggers, this.bridgeRects, this.foregroundLayer, this.bridgeTriggerGroup, this.bridges, this.player)
-        console.log('done')
+        // Coins
+        const coinPoints = map.getObjectLayer('coins')['objects']
+        this.coins = this.add.group()
+        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player, this.pickupAudio)
+        this.coins = this.coinGroup.createCoins()
+        this.coins.children.iterate((c) => { c.setTexture('coin') })
 
         var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
         for(let i = 0; i < keys.length; i++){
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
         }
 
+        // set ui 
         this.setUpHud()
+        this.deathText= this.add.text(200, 100, 'Death: ' + gameState.death)
+        this.shotText= this.add.text(600, 100, 'Shots: ' + this.shotsFire)
+        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
         this.muteMusicSetUp()
-        const coinPoints = map.getObjectLayer('coins')['objects']
-        this.coins = this.add.group()
-        console.log(typeof(this.coins))
-        this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player, this.pickupAudio)
-        this.coins = this.coinGroup.createCoins()
-        this.coins.children.iterate((c) => { c.setTexture('coin') })
     }
 
 
@@ -182,10 +189,27 @@ export class Level12 extends Phaser.Scene {
             this.player.body.setVelocityX(0)
         }
 
-        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) 
-            && this.coinGroup.numberOfCoinsCollected >= this.coinGroup.numberOfCoins
-            ) {
-            console.log("reach end")
+        if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
+            if(this.coinGroup.numberOfCoinsCollected != 3){
+                if(gameState.starSystem.getLevel(12) < 1){
+                    gameState.starSystem.setStars(1, 1)
+                }
+            }
+            else if(this.shotsFire <= this.starThreshold.threeStar){
+                if(gameState.starSystem.getLevel(12) < 3){
+                    gameState.starSystem.setStars(1, 3)
+                }
+            }
+            else if((this.shotsFire > this.starThreshold.threeStar) && (this.shotsFire < this.starThreshold.twoStar)){
+                if(gameState.starSystem.getLevel(12) < 2){
+                    gameState.starSystem.setStars(1, 2)
+                }
+            } else {
+                if(gameState.starSystem.getLevel(12) < 1){
+                    gameState.starSystem.setStars(1, 1)
+                }
+            }
+            this.shotsFire = 0
             gameState.levelCompletion[4] = true
             this.switchLevel('main_screen')
         }
@@ -200,19 +224,17 @@ export class Level12 extends Phaser.Scene {
         if(this.NINE.isDown) this.switchLevel('level9')
 
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
-            console.log("IM CALLED")
             let bullet = this.player.getBullet()
-            console.log("bullet is null?: " + bullet)
             if (bullet == null) {
-                this.player.numberOfShots --
+                this.shotsFire += 1
                 this.player.fireBullet()
             }
             else
                 this.player.blink()
         }
 
-
         this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
+        this.shotText.setText('Shots: ' + this.shotsFire)
     }
     switchLevel(level) {
         this.killMusic()
@@ -220,18 +242,10 @@ export class Level12 extends Phaser.Scene {
     }
     resetPlayer() {
         gameState.death += 1
+        this.shotsFire = 0
         this.deathText.setText('Death: ' + gameState.death)
-        // this.hitAudio.play()
-        // this.coinGroup.createCoins()
-        // this.coins.children.iterate((c) => { c.setTexture('coin') })
-        // this.player.body.x = this.startpoint.x
-        // this.player.body.y = this.startpoint.y
-
-        // Copied from lv 10
         resetPlayerWithTilesRemoved(this.hitAudio, this.coinGroup, this.coins, this.player, this.startpoint)
         setUpBridgeTriggers(this, this.bridgeTriggers, this.bridgeRects, this.foregroundLayer, this.bridgeTriggerGroup, this.bridges, this.player)
-        // this.enemiesGroup.clear(true, true)
-        // setUpEnemyTriggers(this, this.triggers, this.wallPoints, this.player, this.enemiesGroup)
     }
 
     pauseMusic() { this.levelMusic.pause() }
@@ -257,23 +271,67 @@ export class Level12 extends Phaser.Scene {
                 this.follower.pauseFollow()
                 this.follower2.pauseFollow()
                 this.follower3.pauseFollow()
+                this.menu = this.add.sprite(960/2, 960/2, 'menu');
+                this.choiceLabel = this.add.text(960/2 - 50, 960/2-200, 'Pause', { font: '30px Arial', fill: '#000' });
+                if(gameState.starSystem.getLevel(12) == 3){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'star')
+                } else if (gameState.starSystem.getLevel(12) == 2){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                } else if (gameState.starSystem.getLevel(12) == 1){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                } else {
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'empty_star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                }
+                this.playButton = this.add.sprite(960/2 + 175, 650, 'play_button')
+                this.restartButton = this.add.sprite(960/2, 650, 'restart_button')
+                this.homeButton = this.add.sprite(960/2 - 175, 650, 'home_button')
+                this.playButton.setInteractive()
+                this.restartButton.setInteractive()
+                this.homeButton.setInteractive()
+                this.playButton.on('pointerdown', () => {
+                    this.unpause()
+                })
+                this.homeButton.on('pointerdown', () => {
+                    this.killMusic()
+                    this.scene.start('main_screen')
+                })
+                this.restartButton.on('pointerdown', () => {
+                    this.switchLevel('level12')
+                    this.shotsFire = 0
+                })
                 this.player.speed = 0
                 this.pauseMusic()
                 this.toggle = 0
                 this.btSwitch.setTexture('play')
             } else {
-                this.follower.resumeFollow()
-                this.follower2.resumeFollow()
-                this.follower3.resumeFollow()
-                this.player.speed = 80
-                this.resumeMusic()
-                this.toggle = 1
-                this.btSwitch.setTexture('pause')
+                this.unpause()
             }
         })
-
-        this.deathText = this.add.text(200, 100, 'Death: ' + gameState.death)
-        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
+    }
+    unpause(){
+        this.follower.resumeFollow()
+        this.follower2.resumeFollow()
+        this.follower3.resumeFollow()
+        this.player.speed = 80
+        this.resumeMusic()
+        this.toggle = 1
+        this.btSwitch.setTexture('pause')
+        this.menu.destroy();
+        this.choiceLabel.destroy();
+        this.star1.destroy();
+        this.star2.destroy();
+        this.star3.destroy();
+        this.playButton.destroy()
+        this.restartButton.destroy()
+        this.homeButton.destroy()
     }
 
     muteMusicSetUp() {
