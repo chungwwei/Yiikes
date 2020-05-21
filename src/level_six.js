@@ -300,22 +300,22 @@ export class Level6 extends Phaser.Scene {
 
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
             if(this.coinGroup.numberOfCoinsCollected != 3){
-                if(gameState.starSystem.getLevel(4) < 1){
-                    gameState.starSystem.setStars(1, 1)
+                if(gameState.starSystem.getLevel(6) < 1){
+                    gameState.starSystem.setStars(6, 1)
                 }
             }
             else if(this.shotsFire <= this.starThreshold.threeStar){
-                if(gameState.starSystem.getLevel(4) < 3){
-                    gameState.starSystem.setStars(1, 3)
+                if(gameState.starSystem.getLevel(6) < 3){
+                    gameState.starSystem.setStars(6, 3)
                 }
             }
             else if((this.shotsFire > this.starThreshold.threeStar) && (this.shotsFire < this.starThreshold.twoStar)){
-                if(gameState.starSystem.getLevel(4) < 2){
-                    gameState.starSystem.setStars(1, 2)
+                if(gameState.starSystem.getLevel(6) < 2){
+                    gameState.starSystem.setStars(6, 2)
                 }
             } else {
-                if(gameState.starSystem.getLevel(4) < 1){
-                    gameState.starSystem.setStars(1, 1)
+                if(gameState.starSystem.getLevel(6) < 1){
+                    gameState.starSystem.setStars(6, 1)
                 }
             }
         this.shotsFire = 0
@@ -415,15 +415,15 @@ export class Level6 extends Phaser.Scene {
                 this.ball4.pauseFollow()
                 this.menu = this.add.sprite(960/2, 960/2, 'menu');
                 this.choiceLabel = this.add.text(960/2 - 50, 960/2-200, 'Pause', { font: '30px Arial', fill: '#000' });
-                if(gameState.starSystem.getLevel(4) == 3){
+                if(gameState.starSystem.getLevel(6) == 3){
                     this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
                     this.star2 = this.add.sprite(960/2, 400, 'star')
                     this.star3 = this.add.sprite(960/2 + 150, 400, 'star')
-                } else if (gameState.starSystem.getLevel(4) == 2){
+                } else if (gameState.starSystem.getLevel(6) == 2){
                     this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
                     this.star2 = this.add.sprite(960/2, 400, 'star')
                     this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
-                } else if (gameState.starSystem.getLevel(4) == 1){
+                } else if (gameState.starSystem.getLevel(6) == 1){
                     this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
                     this.star2 = this.add.sprite(960/2, 400, 'empty_star')
                     this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')

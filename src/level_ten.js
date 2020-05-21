@@ -224,7 +224,7 @@ export class Level10 extends Phaser.Scene {
                 }
             }
             console.log("reach end")
-            gameState.levelCompletion[1] = true
+            gameState.levelCompletion[10] = true
             this.killMusic()
             this.scene.start('level11')
         }

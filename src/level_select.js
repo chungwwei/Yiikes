@@ -32,11 +32,12 @@ export class LevelSelectScene extends Phaser.Scene {
         
         this.texts = []
 
-        for (let i = 0; i < 9; i ++) {
+        for (let i = 0; i < 12; i ++) {
             var x, y;
             if (i < 3) y = 250
-            else if (i < 6) y = 400
-            else if (i < 9) y = 550
+            else if (i < 6) y = 380
+            else if (i < 9) y = 510
+            else y = 640
 
             if (i % 3 === 0) x = 250
             else if (i % 3 === 1) x = 500

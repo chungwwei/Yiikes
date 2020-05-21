@@ -41,6 +41,7 @@ export const game = new Phaser.Game(config);
 export var gameState = {
   levelCompletion: [true, false, false, 
                       false, false, false,
+                      false, false, false,
                       false, false, false],
   volume: 0.5,
   death: 0,

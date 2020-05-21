@@ -228,21 +228,21 @@ export class Level5 extends Phaser.Scene {
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
             if(this.coinGroup.numberOfCoinsCollected != 3){
                 if(gameState.starSystem.getLevel(5) < 1){
-                    gameState.starSystem.setStars(1, 1)
+                    gameState.starSystem.setStars(5, 1)
                 }
             }
             else if(this.shotsFire <= this.starThreshold.threeStar){
                 if(gameState.starSystem.getLevel(5) < 3){
-                    gameState.starSystem.setStars(1, 3)
+                    gameState.starSystem.setStars(5, 3)
                 }
             }
             else if((this.shotsFire > this.starThreshold.threeStar) && (this.shotsFire < this.starThreshold.twoStar)){
                 if(gameState.starSystem.getLevel(5) < 2){
-                    gameState.starSystem.setStars(1, 2)
+                    gameState.starSystem.setStars(5, 2)
                 }
             } else {
                 if(gameState.starSystem.getLevel(5) < 1){
-                    gameState.starSystem.setStars(1, 1)
+                    gameState.starSystem.setStars(5, 1)
                 }
             }
         this.shotsFire = 0
