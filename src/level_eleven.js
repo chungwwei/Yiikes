@@ -59,6 +59,7 @@ export class Level11 extends Phaser.Scene {
         this.foregroundLayer = map.createDynamicLayer('foreground', tiles, 0, 0, 60 * 16, 60 * 16, 16, 16)
         this.bridgeLayer     = map.createBlankDynamicLayer('bridges', tiles, 0, 0, 60 * 16, 60 * 16, 16, 16)
         // Spawn Points
+        console.log(map.objects)
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
         const pointB = start_end_points[1]
@@ -146,8 +147,9 @@ export class Level11 extends Phaser.Scene {
         this.bridgeRects    = map.getObjectLayer('bridges')['objects']
         this.bridgeTriggerGroup = this.add.group()
         this.bridges = this.add.group()
+        console.log(this.bridgeRects)
         setUpBridgeTriggers(this, this.bridgeTriggers, this.bridgeRects, this.foregroundLayer, this.bridgeTriggerGroup, this.bridges, this.player)
-
+        console.log('done')
 
         var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
         for(let i = 0; i < keys.length; i++){
@@ -234,11 +236,11 @@ export class Level11 extends Phaser.Scene {
     resetPlayer() {
         gameState.death += 1
         this.deathText.setText('Death: ' + gameState.death)
-        this.hitAudio.play()
-        this.coinGroup.createCoins()
-        this.coins.children.iterate((c) => { c.setTexture('coin') })
-        this.player.body.x = this.startpoint.x
-        this.player.body.y = this.startpoint.y
+        // this.hitAudio.play()
+        // this.coinGroup.createCoins()
+        // this.coins.children.iterate((c) => { c.setTexture('coin') })
+        // this.player.body.x = this.startpoint.x
+        // this.player.body.y = this.startpoint.y
 
         // Copied from lv 10
         resetPlayerWithTilesRemoved(this.hitAudio, this.coinGroup, this.coins, this.player, this.startpoint)
