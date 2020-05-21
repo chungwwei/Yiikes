@@ -19,12 +19,14 @@ var pickupSound = require('./assets/audio/pickup.wav')
 var hitSound = require('./assets/audio/hit.ogg')
 var clickSound = require('./assets/audio/click.wav')
 var levelMusic = require('./assets/audio/IttyBitty8Bit.mp3')
-
+//Star System Lines Changed: 28-29, 60, 182, 222-236, 270, 278
 export class Level9 extends Phaser.Scene {
     constructor() {
         super('level9')
         this.player = null
-        this.spacebar = null    
+        this.spacebar = null
+        this.starThreshold = {oneStar: 10, twoStar: 5, threeStar: 0}
+        this.shotsFired = 0    
     }
 
     preload() {
@@ -55,6 +57,7 @@ export class Level9 extends Phaser.Scene {
         this.laserLayer = map.createStaticLayer('lasers', tiles)
         this.wallLayer = map.createDynamicLayer('wall', tiles)
         this.isWallDestroyed = false
+        this.shotsFired = 0
         //Set Spawn Points
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
@@ -176,6 +179,7 @@ export class Level9 extends Phaser.Scene {
         }
         //Initialize Text UI
         this.deathText= this.add.text(200, 100, 'Death: ' + gameState.death)
+        this.shotText= this.add.text(600, 100, 'Shots: ' + this.shotsFired)
         this.coinText = this.add.text(400, 100, 'Coins collected: 0')
         this.muteMusicSetUp()
     }
@@ -215,9 +219,23 @@ export class Level9 extends Phaser.Scene {
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) 
             && (this.numberOfKeys < 1)
             ) {
-            console.log("reach end")
+            if(this.shotsFired <= this.starThreshold.threeStar){
+                if(gameState.starSystem.getLevel(9) < 3){
+                    gameState.starSystem.setStars(9, 3)
+                }
+            }
+            else if((this.shotsFired >= this.starThreshold.twoStar) && (this.shotsFired < this.starThreshold.oneStar)){
+                if(gameState.starSystem.getLevel(9) < 2){
+                    gameState.starSystem.setStars(9, 2)
+                }
+            } else {
+                if(gameState.starSystem.getLevel(9) < 1){
+                    gameState.starSystem.setStars(9, 1)
+                }
+            }
+            this.shotsFired = 0
             gameState.levelCompletion[9] = true
-            this.switchLevel('level10')
+            this.switchLevel('main_screen')
         }
         //Cheats Functionality
         if(this.ONE.isDown) this.switchLevel('level1')
@@ -231,12 +249,11 @@ export class Level9 extends Phaser.Scene {
         if(this.NINE.isDown) this.switchLevel('level9')
         //Player shooting and teleporting input
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
-            console.log("IM CALLED")
             let bullet = this.player.getBullet()
-            console.log("bullet is null?: " + bullet)
             if (bullet == null) {
                 //bullet collides with wall
                 this.player.fireBullet()
+                this.shotsFired += 1
                 this.physics.add.collider(this.player.bullet, this.wallLayer, 
                     (bullet, layer) => {
                         this.player.bullet.destroy()
@@ -250,7 +267,7 @@ export class Level9 extends Phaser.Scene {
         //Updates Shooting UI
         // this.shotText.setText('Number of Shots: ' + this.player.numberOfShots)
         this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)
-
+        this.shotText.setText('Shots: ' + this.shotsFired)
     }
     switchLevel(level) {
         this.killMusic()
@@ -258,6 +275,7 @@ export class Level9 extends Phaser.Scene {
     }
     resetPlayer() {
         gameState.death += 1
+        this.shotsFired = 0
         this.deathText.setText('Death: ' + gameState.death)
         this.hitAudio.play()
         this.coinGroup.createCoins()
@@ -324,8 +342,6 @@ export class Level9 extends Phaser.Scene {
                 this.btSwitch.setTexture('pause')
             }
         })
-
-        this.coinText = this.add.text(400, 100, 'Coins collected: 0')
     }
     muteMusicSetUp() {
         this.mKey = this.input.keyboard.addKey('M')

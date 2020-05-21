@@ -15,7 +15,9 @@ import { HelpScene } from "./help_screen";
 import { MainScene } from "./main_screen";
 import { LoadScene } from "./load_screen";
 import { Level10 } from "./level_ten";
-
+import { StarSystem } from "./star_system";
+//TODO: ADD PAUSE MENU
+//TODO: ADD NEXT LEVEL MENU*
 
 const config = {
   type: Phaser.AUTO,
@@ -39,7 +41,8 @@ export var gameState = {
                       false, false, false,
                       false, false, false],
   volume: 0.5,
-  death: 0
+  death: 0,
+  starSystem: new StarSystem()
 }
 
 function preload() {
