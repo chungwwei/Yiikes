@@ -4,7 +4,7 @@ import { gameState } from ".";
 export class StarSystem {
     constructor() {
         this.stars = 3
-        this.level = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        this.level = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     }
 
     setStars(level, stars) {
