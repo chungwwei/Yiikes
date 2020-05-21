@@ -137,10 +137,13 @@ export class Level11 extends Phaser.Scene {
             })   
         }
 
-        // SplinePoints Patrol
+        // SplinePoints Patrols
         const splinePoints = map.getObjectLayer('spline_points')['objects']
+        const splinePoints2 = map.getObjectLayer('spline_points2')['objects']
         this.follower = createSplineFollower(this, splinePoints, 6000, 'square')
-        this.physics.add.overlap(this.follower, this.player, () => { this.resetPlayer() })  
+        this.follower2 = createSplineFollower(this, splinePoints2, 6000, 'square')
+        this.physics.add.overlap(this.follower, this.player, () => { this.resetPlayer() })
+        this.physics.add.overlap(this.follower2, this.player, () => { this.resetPlayer() })
 
         // Bridges
         this.bridgeTriggers = map.getObjectLayer('bridge_triggers')['objects']
@@ -245,8 +248,8 @@ export class Level11 extends Phaser.Scene {
         // Copied from lv 10
         resetPlayerWithTilesRemoved(this.hitAudio, this.coinGroup, this.coins, this.player, this.startpoint)
         setUpBridgeTriggers(this, this.bridgeTriggers, this.bridgeRects, this.foregroundLayer, this.bridgeTriggerGroup, this.bridges, this.player)
-        this.enemiesGroup.clear(true, true)
-        setUpEnemyTriggers(this, this.triggers, this.wallPoints, this.player, this.enemiesGroup)
+        // this.enemiesGroup.clear(true, true)
+        // setUpEnemyTriggers(this, this.triggers, this.wallPoints, this.player, this.enemiesGroup)
     }
 
     pauseMusic() { this.levelMusic.pause() }
@@ -262,32 +265,28 @@ export class Level11 extends Phaser.Scene {
         this.btHome.on('pointerdown', () => {
             this.clickAudio.play()
             this.killMusic()
-            this.scene.start('main_screen')
+            this.scene.start('level12')
         })
 
         this.toggle = 1
         this.btSwitch.on('pointerdown', () => {
             // game is on, like to pause it
             if (this.toggle === 1) {
-                this.xFollower.forEach((f) => {
-                    f.pauseFollow()
-                })
                 this.yFollower.forEach((f) => {
                     f.pauseFollow()
                 })
-                this.ball1.pauseFollow()
+                this.follower.pauseFollow()
+                this.follower2.pauseFollow()
                 this.player.speed = 0
                 this.pauseMusic()
                 this.toggle = 0
                 this.btSwitch.setTexture('play')
             } else {
-                this.xFollower.forEach((f) => {
-                    f.resumeFollow()
-                })
                 this.yFollower.forEach((f) => {
                     f.resumeFollow()
                 })
-                this.ball1.resumeFollow()
+                this.follower.resumeFollow()
+                this.follower2.resumeFollow()
                 this.player.speed = 80
                 this.resumeMusic()
                 this.toggle = 1
