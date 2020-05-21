@@ -253,6 +253,8 @@ export class Level2 extends Phaser.Scene {
         if (Phaser.Geom.Rectangle.Contains(this.water, this.player.x, this.player.y) || 
             Phaser.Geom.Rectangle.Contains(this.water2, this.player.x, this.player.y)) {
             this.player.speed = 110
+        } else if (this.toggle === 0) {
+            this.player.speed = 0
         } else {
             this.player.speed = 80
         }
@@ -324,6 +326,7 @@ export class Level2 extends Phaser.Scene {
                     f.pauseFollow()
                 })
                 this.ball1.pauseFollow()
+                this.player.speed = 0
                 this.pauseMusic()
                 this.toggle = 0
                 this.btSwitch.setTexture('play')
@@ -335,6 +338,7 @@ export class Level2 extends Phaser.Scene {
                     f.resumeFollow()
                 })
                 this.ball1.resumeFollow()
+                this.player.speed = 80
                 this.resumeMusic()
                 this.toggle = 1
                 this.btSwitch.setTexture('pause')

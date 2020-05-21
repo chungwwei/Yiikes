@@ -284,6 +284,7 @@ export class Level5 extends Phaser.Scene {
                 this.yFollower.forEach((f) => {
                     f.pauseFollow()
                 })
+                this.player.speed = 0
                 this.toggle = 0
                 this.pauseMusic()
                 this.btSwitch.setTexture('play')
@@ -294,6 +295,7 @@ export class Level5 extends Phaser.Scene {
                 this.yFollower.forEach((f) => {
                     f.resumeFollow()
                 })
+                this.player.speed = 80
                 this.toggle = 1
                 this.resumeMusic()
                 this.btSwitch.setTexture('pause')

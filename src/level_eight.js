@@ -310,6 +310,7 @@ export class Level8 extends Phaser.Scene {
                 this.toggle = 0
                 this.pauseMusic()
                 this.btSwitch.setTexture('play')
+                this.player.speed = 0
             } else {
                 this.xFollower.forEach((f) => {
                     f.resumeFollow()
@@ -320,6 +321,7 @@ export class Level8 extends Phaser.Scene {
                 this.toggle = 1
                 this.resumeMusic()
                 this.btSwitch.setTexture('pause')
+                this.player.speed = 80
             }
         })
 

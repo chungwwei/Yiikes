@@ -152,7 +152,7 @@ export class Level3 extends Phaser.Scene {
         const cycle1Points = map.getObjectLayer('cycle1')['objects']
         const circlePathPoints = map.getObjectLayer('circle_paths')['objects']
         const LpathPoints = map.getObjectLayer('L_path')['objects']
-        this.cycleGroup = createMutilpleSplineFollower(this, cycle1Points, 3000, 'pink_circle')
+        this.cycleGroup = createMutilpleSplineFollower(this, cycle1Points, 5000, 'pink_circle')
         this.circleGroup = createCirclePathFollowers(this, circlePathPoints, 2000, 45,'cyan_circle', false)
         this.LPath = createSplineFollower(this, LpathPoints, 1500, 'pink_circle')
         this.physics.add.overlap(this.cycleGroup, this.player, () => {
@@ -267,6 +267,7 @@ export class Level3 extends Phaser.Scene {
                 this.cycleGroup.children.iterate((c) => { c.pauseFollow() })
                 this.circleGroup.children.iterate((c) => { c.pauseFollow() })
                 this.LPath.pauseFollow()
+                this.player.speed = 0
                 this.pauseMusic()
                 this.toggle = 0
                 this.btSwitch.setTexture('play')
@@ -274,6 +275,7 @@ export class Level3 extends Phaser.Scene {
                 this.cycleGroup.children.iterate((c) => { c.resumeFollow() })
                 this.circleGroup.children.iterate((c) => { c.resumeFollow() })
                 this.LPath.resumeFollow()
+                this.player.speed = 80
                 this.resumeMusic()
                 this.toggle = 1
                 this.btSwitch.setTexture('pause')

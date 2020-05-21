@@ -219,7 +219,7 @@ export class Level1 extends Phaser.Scene {
             console.log("reach end")
             gameState.levelCompletion[1] = true
             this.killMusic()
-            this.scene.start('level2')
+            this.scene.start('level10')
             // this.scene.start('star_screen', {shots: 10, expectedShots: 3})
         }
         
@@ -286,6 +286,7 @@ export class Level1 extends Phaser.Scene {
                 this.followers.forEach((f) => {
                     f.pauseFollow()
                 })
+                this.player.speed = 0
                 this.pauseMusic()
                 this.toggle = 0
                 this.btSwitch.setTexture('play')
@@ -293,6 +294,7 @@ export class Level1 extends Phaser.Scene {
                 this.followers.forEach((f) => {
                     f.resumeFollow()
                 })
+                this.player.speed = 100
                 this.resumeMusic()
                 this.toggle = 1
                 this.btSwitch.setTexture('pause')
