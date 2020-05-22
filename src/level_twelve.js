@@ -51,6 +51,12 @@ export class Level12 extends Phaser.Scene {
         this.load.spritesheet('walk_sheet', walkingSheet, { frameWidth: 25, frameHeight: 25 })
         this.load.image('character', characterImg)
         this.load.image('coin', coinImg)
+        this.load.image('star', starImg)
+        this.load.image('empty_star', emptyStarImg)
+        this.load.image('play_button', playButtonImg)
+        this.load.image('home_button', homeButtonImg)
+        this.load.image('restart_button', restartButtonImg)
+        this.load.image('menu', menu)
 
         this.load.audio('hit', hitSound)
         this.load.audio('click', clickSound)
