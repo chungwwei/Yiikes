@@ -367,6 +367,7 @@ export class Level2 extends Phaser.Scene {
     }
     resetPlayer() {
         gameState.death += 1
+        this.shotsFired = 0
         this.deathText.setText('Death: ' + gameState.death)
         this.hitAudio.play()
         this.coinGroup.createCoins()

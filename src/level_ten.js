@@ -304,6 +304,7 @@ export class Level10 extends Phaser.Scene {
 
     resetPlayer() {
         gameState.death += 1
+        this.shotsFired = 0
         this.deathText.setText('Death: ' + gameState.death)
         resetPlayerWithTilesRemoved(this.hitAudio, this.coinGroup, this.coins, this.player, this.startpoint)
         setUpBridgeTriggers(this, this.bridgeTriggers, this.bridgeRects, this.foregroundLayer, this.bridgeTriggerGroup, this.bridges, this.player)
