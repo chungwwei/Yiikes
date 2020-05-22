@@ -263,9 +263,9 @@ export class Level8 extends Phaser.Scene {
         if(this.SEVEN.isDown) this.switchLevel('level7')
         if(this.EIGHT.isDown) this.switchLevel('level8')
         if(this.NINE.isDown) this.switchLevel('level9')
-        if(this.ZERO.isDown) this.scene.start('level10')
-        if(this.MINUS.isDown) this.scene.start('level11')
-        if(this.PLUS.isDown) this.scene.start('level12')
+        if(this.ZERO.isDown) this.switchLevel('level10')
+        if(this.MINUS.isDown) this.switchLevel('level11')
+        if(this.PLUS.isDown) this.switchLevel('level12')
         //Player shooting and teleporting input
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
             console.log("IM CALLED")
