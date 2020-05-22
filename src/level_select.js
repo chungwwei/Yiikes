@@ -2,6 +2,10 @@
 import lockImg from "./assets/lock_black_48x48.png"
 import returnImg from "./assets/keyboard_return_black_48x48.png"
 import unlockImg from "./assets/lock_open_black_48x48.png"
+import star_0 from "./assets/star_0.png"
+import star_1 from "./assets/star_1.png"
+import star_2 from "./assets/star_2.png"
+import star_3 from "./assets/star_3.png"
 import { game, gameState } from ".";
 export class LevelSelectScene extends Phaser.Scene { 
 
@@ -14,6 +18,10 @@ export class LevelSelectScene extends Phaser.Scene {
         this.load.image('lock', lockImg)
         this.load.image('return', returnImg)
         this.load.image('unlock', unlockImg)
+        this.load.image('star_0', star_0)
+        this.load.image('star_1', star_1)
+        this.load.image('star_2', star_2)
+        this.load.image('star_3', star_3)
 
     }
 
@@ -43,11 +51,14 @@ export class LevelSelectScene extends Phaser.Scene {
             else if (i % 3 === 1) x = 500
             else if (i % 3 === 2) x = 750
 
-            var img
+            var img, starImg
             if (gameState.levelCompletion[i] === false)
                 img = this.add.image(x, y, 'lock')
             else{
+                let star = gameState.starSystem.getLevel(i+1)
+                console.log(star)
                 img = this.add.image(x, y, 'unlock')
+                starImg = this.add.image(x,y-25,'star_'+star)
                 img.setInteractive()
                 img.on('pointerdown', () =>{
                     this.scene.start('level' + (i + 1))
