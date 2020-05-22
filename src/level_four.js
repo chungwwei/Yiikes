@@ -68,6 +68,7 @@ export class Level4 extends Phaser.Scene {
         this.backgroundLayer = map.createStaticLayer('background', tiles)
         this.foregroundLayer = map.createStaticLayer('foreground', tiles)
         this.laserLayer = map.createStaticLayer('lasers', tiles)
+        this.levelCompleted = false
         // Spawn Points
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
@@ -237,7 +238,6 @@ export class Level4 extends Phaser.Scene {
         }
 
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
-            this.levelCompleted = false
             if(!this.levelComleted){
                 if(this.coinGroup.numberOfCoinsCollected != 3){
                     if(gameState.starSystem.getLevel(4) < 1){
