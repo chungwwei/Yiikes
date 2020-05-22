@@ -300,7 +300,7 @@ export class Level6 extends Phaser.Scene {
         }
 
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
-            if(!this.levelComleted){
+            if(!this.levelCompleted){
                 if(this.coinGroup.numberOfCoinsCollected != 3){
                     if(gameState.starSystem.getLevel(6) < 1){
                         gameState.starSystem.setStars(6, 1)
@@ -320,7 +320,7 @@ export class Level6 extends Phaser.Scene {
                         gameState.starSystem.setStars(6, 1)
                     }
                 }
-                this.levelComleted = true
+                this.levelCompleted = true
                 this.menu = this.add.sprite(960/2, 960/2, 'menu');
                 this.choiceLabel = this.add.text(960/2 - 100, 960/2-200, 'Level 6 Completed!', { font: '30px Arial', fill: '#000' });
                 if(gameState.starSystem.getLevel(6) == 3){
