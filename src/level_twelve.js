@@ -64,6 +64,7 @@ export class Level12 extends Phaser.Scene {
         this.backgroundLayer = map.createDynamicLayer('background', tiles)
         this.foregroundLayer = map.createDynamicLayer('foreground', tiles, 0, 0, 60 * 16, 60 * 16, 16, 16)
         this.bridgeLayer     = map.createBlankDynamicLayer('bridges', tiles, 0, 0, 60 * 16, 60 * 16, 16, 16)
+        this.levelCompleted = false
         // Spawn Points
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
@@ -188,7 +189,6 @@ export class Level12 extends Phaser.Scene {
         }
 
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
-            this.levelCompleted = false
             if(!this.levelComleted){
                 if(this.coinGroup.numberOfCoinsCollected != 3){
                     if(gameState.starSystem.getLevel(12) < 1){
