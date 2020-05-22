@@ -230,7 +230,8 @@ export class Level1 extends Phaser.Scene {
         }
 
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
-            
+            this.levelComleted = false
+            if(!this.levelComleted){
                 if(this.coinGroup.numberOfCoinsCollected != 3){
                     if(gameState.starSystem.getLevel(1) < 1){
                         gameState.starSystem.setStars(1, 1)
@@ -250,12 +251,48 @@ export class Level1 extends Phaser.Scene {
                         gameState.starSystem.setStars(1, 1)
                     }
                 }
-            this.shotsFire = 0
-            console.log("reach end")
-            gameState.levelCompletion[1] = true
-            this.killMusic()
-            this.scene.start('level2')
-            // this.scene.start('star_screen', {shots: 10, expectedShots: 3})
+                this.shotsFire = 0
+                gameState.levelCompletion[1] = true
+                this.levelComleted = true
+                this.menu = this.add.sprite(960/2, 960/2, 'menu');
+                this.choiceLabel = this.add.text(960/2 - 100, 960/2-200, 'Level 1 Completed!', { font: '30px Arial', fill: '#000' });
+                if(gameState.starSystem.getLevel(1) == 3){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'star')
+                } else if (gameState.starSystem.getLevel(1) == 2){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                    this.tipLabel = this.add.text(960/2 - 325, 960/2-300, 'Collect all Coins or Only Use 5 shots to get 3 stars', { font: '30px Arial', fill: '#000' });
+                } else if (gameState.starSystem.getLevel(1) == 1){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                    this.tipLabel = this.add.text(960/2 - 325, 960/2-300, 'Collect all Coins or Only Use 5 shots to get 3 stars', { font: '30px Arial', fill: '#000' });
+                } else {
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'empty_star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                    this.tipLabel = this.add.text(960/2 - 325, 960/2-300, 'Collect all Coins or Only Use 5 shots to get 3 stars', { font: '30px Arial', fill: '#000' });
+                }
+                this.playButton = this.add.sprite(960/2 + 175, 650, 'play_button')
+                this.restartButton = this.add.sprite(960/2, 650, 'restart_button')
+                this.homeButton = this.add.sprite(960/2 - 175, 650, 'home_button')
+                this.playButton.setInteractive()
+                this.restartButton.setInteractive()
+                this.homeButton.setInteractive()
+                this.playButton.on('pointerdown', () => {
+                    this.switchLevel('level2')
+                })
+                this.homeButton.on('pointerdown', () => {
+                    this.killMusic()
+                    this.scene.start('main_screen')
+                })
+                this.restartButton.on('pointerdown', () => {
+                    this.switchLevel('level1')
+                })
+            }
         }
         
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
@@ -278,9 +315,9 @@ export class Level1 extends Phaser.Scene {
         if(this.SEVEN.isDown) this.switchLevel('level7')
         if(this.EIGHT.isDown) this.switchLevel('level8')
         if(this.NINE.isDown) this.switchLevel('level9')
-        if(this.ZERO.isDown) this.scene.start('level10')
-        if(this.MINUS.isDown) this.scene.start('level11')
-        if(this.PLUS.isDown) this.scene.start('level12')
+        if(this.ZERO.isDown) this.switchLevel('level10')
+        if(this.MINUS.isDown) this.switchLevel('level11')
+        if(this.PLUS.isDown) this.switchLevel('level12')
 
 
         this.coinText.setText('Coins collected: ' + this.coinGroup.numberOfCoinsCollected)

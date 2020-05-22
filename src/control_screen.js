@@ -50,7 +50,7 @@ export class ControlScene extends Phaser.Scene{
         this.pauseText.setColor('0x000000')
         this.pauseText.setFontSize(30)
 
-        this.pauseText = this.add.text(200, 530, "M - Mute/Unmute")
+        this.pauseText = this.add.text(200, 530, "M - Mute")
         this.pauseText.setColor('0x000000')
         this.pauseText.setFontSize(30)
     }
