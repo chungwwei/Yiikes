@@ -407,15 +407,15 @@ export class Level2 extends Phaser.Scene {
                 // Pause UI
                 this.menu = this.add.sprite(960/2, 960/2, 'menu');
                 this.choiceLabel = this.add.text(960/2 - 50, 960/2-200, 'Pause', { font: '30px Arial', fill: '#000' });
-                if(gameState.starSystem.getLevel(1) == 3){
+                if(gameState.starSystem.getLevel(2) == 3){
                     this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
                     this.star2 = this.add.sprite(960/2, 400, 'star')
                     this.star3 = this.add.sprite(960/2 + 150, 400, 'star')
-                } else if (gameState.starSystem.getLevel(1) == 2){
+                } else if (gameState.starSystem.getLevel(2) == 2){
                     this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
                     this.star2 = this.add.sprite(960/2, 400, 'star')
                     this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
-                } else if (gameState.starSystem.getLevel(1) == 1){
+                } else if (gameState.starSystem.getLevel(2) == 1){
                     this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
                     this.star2 = this.add.sprite(960/2, 400, 'empty_star')
                     this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
