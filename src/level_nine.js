@@ -71,6 +71,7 @@ export class Level9 extends Phaser.Scene {
         this.wallLayer = map.createDynamicLayer('wall', tiles)
         this.isWallDestroyed = false
         this.shotsFired = 0
+        this.levelCompleted = false 
         //Set Spawn Points
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
@@ -232,26 +233,67 @@ export class Level9 extends Phaser.Scene {
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) 
             && (this.numberOfKeys < 1)
             ) {
-            if(this.coinGroup.numberOfCoinsCollected != 8){
-                if(gameState.starSystem.getLevel(9) < 1){
-                    gameState.starSystem.setStars(9, 1)
+            if(this.levelCompleted == false){
+                if(this.coinGroup.numberOfCoinsCollected != 9){
+                    if(gameState.starSystem.getLevel(9) < 1){
+                        gameState.starSystem.setStars(9, 1)
+                    }
+                } else if(this.shotsFired <= this.starThreshold.threeStar){
+                    if(gameState.starSystem.getLevel(9) < 3){
+                        gameState.starSystem.setStars(9, 3)
+                    }
+                } else if((this.shotsFired > this.starThreshold.threeStar) && (this.shotsFired < this.starThreshold.twoStar)){
+                    if(gameState.starSystem.getLevel(9) < 2){
+                        gameState.starSystem.setStars(9, 2)
+                    }
+                } else {
+                    if(gameState.starSystem.getLevel(9) < 1){
+                        gameState.starSystem.setStars(9, 1)
+                    }
                 }
-            } else if(this.shotsFired <= this.starThreshold.threeStar){
-                if(gameState.starSystem.getLevel(9) < 3){
-                    gameState.starSystem.setStars(9, 3)
+                this.shotsFired = 0
+                gameState.levelCompletion[9] = true
+                this.levelCompleted = true
+                this.menu = this.add.sprite(960/2, 960/2, 'menu');
+                this.choiceLabel = this.add.text(960/2 - 100, 960/2-200, 'Level 8 Completed!', { font: '30px Arial', fill: '#000' });
+                if(gameState.starSystem.getLevel(9) == 3){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'star')
+                } else if (gameState.starSystem.getLevel(9) == 2){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                    this.tipLabel = this.add.text(960/2 - 325, 960/2-300, 'Collect all Coins and Only Use 0 shots to get 3 stars', { font: '30px Arial', fill: '#000' });
+                } else if (gameState.starSystem.getLevel(9) == 1){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                    this.tipLabel = this.add.text(960/2 - 325, 960/2-300, 'Collect all Coins and Only Use 0 shots to get 3 stars', { font: '30px Arial', fill: '#000' });
+                } else {
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'empty_star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                    this.tipLabel = this.add.text(960/2 - 325, 960/2-300, 'Collect all Coins and Only Use 0 shots to get 3 stars', { font: '30px Arial', fill: '#000' });
                 }
-            } else if((this.shotsFired > this.starThreshold.threeStar) && (this.shotsFired < this.starThreshold.twoStar)){
-                if(gameState.starSystem.getLevel(9) < 2){
-                    gameState.starSystem.setStars(9, 2)
-                }
-            } else {
-                if(gameState.starSystem.getLevel(9) < 1){
-                    gameState.starSystem.setStars(9, 1)
-                }
+                this.playButton = this.add.sprite(960/2 + 175, 650, 'play_button')
+                this.restartButton = this.add.sprite(960/2, 650, 'restart_button')
+                this.homeButton = this.add.sprite(960/2 - 175, 650, 'home_button')
+                this.playButton.setInteractive()
+                this.restartButton.setInteractive()
+                this.homeButton.setInteractive()
+                this.playButton.on('pointerdown', () => {
+                    this.switchLevel('level10')
+                })
+                this.homeButton.on('pointerdown', () => {
+                    this.killMusic()
+                    this.scene.start('main_screen')
+                })
+                this.restartButton.on('pointerdown', () => {
+                    this.switchLevel('level9')
+                })
             }
-            this.shotsFired = 0
-            gameState.levelCompletion[9] = true
-            this.switchLevel('main_screen')
+            
         }
         //Cheats Functionality
         if(this.ONE.isDown) this.switchLevel('level1')
