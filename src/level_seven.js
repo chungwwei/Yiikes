@@ -32,7 +32,7 @@ export class Level7 extends Phaser.Scene {
         this.player = null
         this.spacebar = null
         this.starThreshold = {oneStar: 50, twoStar: 30, threeStar: 22}
-        this.shotsFired = 0    
+        this.shotsFired = 0  
     }
 
     preload() {
@@ -69,6 +69,7 @@ export class Level7 extends Phaser.Scene {
         this.laserLayer = map.createStaticLayer('lasers', tiles)
         this.wallLayer = map.createDynamicLayer('wall', tiles)
         this.isWallDestroyed = false
+        this.levelComleted = false  
         //Set Spawn Points
         const start_end_points = map.getObjectLayer('start_end_points')['objects']
         const pointA = start_end_points[0]
@@ -185,7 +186,7 @@ export class Level7 extends Phaser.Scene {
         }
         this.setUpHud()
         //Initialize Level Skip Cheats
-        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE']
+        var keys = ['ONE', 'TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE','ZERO','MINUS','PLUS']
         for(let i = 0; i < keys.length; i++){
             this[keys[i]] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[keys[i]]);
         }
@@ -231,8 +232,7 @@ export class Level7 extends Phaser.Scene {
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y) 
             && (this.numberOfKeys < 1)
             ) {
-            this.levelComleted = false
-            if(!this.levelComleted){
+            if(this.levelComleted == false){
                 if(this.coinGroup.numberOfCoinsCollected != 19){
                     if(gameState.starSystem.getLevel(7) < 1){
                         gameState.starSystem.setStars(7, 1)
@@ -305,6 +305,9 @@ export class Level7 extends Phaser.Scene {
         if(this.SEVEN.isDown) this.switchLevel('level7')
         if(this.EIGHT.isDown) this.switchLevel('level8')
         if(this.NINE.isDown) this.switchLevel('level9')
+        if(this.ZERO.isDown) this.scene.start('level10')
+        if(this.MINUS.isDown) this.scene.start('level11')
+        if(this.PLUS.isDown) this.scene.start('level12')
         //Player shooting and teleporting input
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
             console.log("IM CALLED")
