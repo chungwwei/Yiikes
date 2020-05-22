@@ -226,28 +226,66 @@ export class Level5 extends Phaser.Scene {
         }
 
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
-            if(this.coinGroup.numberOfCoinsCollected != 3){
-                if(gameState.starSystem.getLevel(5) < 1){
-                    gameState.starSystem.setStars(5, 1)
+            this.levelCompleted = false
+            if(!this.levelComleted){
+                if(this.coinGroup.numberOfCoinsCollected != 3){
+                    if(gameState.starSystem.getLevel(5) < 1){
+                        gameState.starSystem.setStars(5, 1)
+                    }
                 }
+                else if(this.shotsFire <= this.starThreshold.threeStar){
+                    if(gameState.starSystem.getLevel(5) < 3){
+                        gameState.starSystem.setStars(5, 3)
+                    }
+                }
+                else if((this.shotsFire > this.starThreshold.threeStar) && (this.shotsFire < this.starThreshold.twoStar)){
+                    if(gameState.starSystem.getLevel(5) < 2){
+                        gameState.starSystem.setStars(5, 2)
+                    }
+                } else {
+                    if(gameState.starSystem.getLevel(5) < 1){
+                        gameState.starSystem.setStars(5, 1)
+                    }
+                }this.levelComleted = true
+                this.menu = this.add.sprite(960/2, 960/2, 'menu');
+                this.choiceLabel = this.add.text(960/2 - 100, 960/2-200, 'Level 5 Completed!', { font: '30px Arial', fill: '#000' });
+                if(gameState.starSystem.getLevel(5) == 3){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'star')
+                } else if (gameState.starSystem.getLevel(5) == 2){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                    this.tipLabel = this.add.text(960/2 - 325, 960/2-300, 'Collect all Coins or Only Use 3 shots to get 3 stars', { font: '30px Arial', fill: '#000' });
+                } else if (gameState.starSystem.getLevel(5) == 1){
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                    this.tipLabel = this.add.text(960/2 - 325, 960/2-300, 'Collect all Coins or Only Use 3 shots to get 3 stars', { font: '30px Arial', fill: '#000' });
+                } else {
+                    this.star1 = this.add.sprite(960/2 - 150, 400, 'empty_star')
+                    this.star2 = this.add.sprite(960/2, 400, 'empty_star')
+                    this.star3 = this.add.sprite(960/2 + 150, 400, 'empty_star')
+                    this.tipLabel = this.add.text(960/2 - 325, 960/2-300, 'Collect all Coins or Only Use 3 shots to get 3 stars', { font: '30px Arial', fill: '#000' });
+                }
+                this.playButton = this.add.sprite(960/2 + 175, 650, 'play_button')
+                this.restartButton = this.add.sprite(960/2, 650, 'restart_button')
+                this.homeButton = this.add.sprite(960/2 - 175, 650, 'home_button')
+                this.playButton.setInteractive()
+                this.restartButton.setInteractive()
+                this.homeButton.setInteractive()
+                this.playButton.on('pointerdown', () => {
+                    this.switchLevel('level6')
+                })
+                this.homeButton.on('pointerdown', () => {
+                    this.killMusic()
+                    this.scene.start('main_screen')
+                })
+                this.restartButton.on('pointerdown', () => {
+                    this.switchLevel('level5')
+                })
             }
-            else if(this.shotsFire <= this.starThreshold.threeStar){
-                if(gameState.starSystem.getLevel(5) < 3){
-                    gameState.starSystem.setStars(5, 3)
-                }
-            }
-            else if((this.shotsFire > this.starThreshold.threeStar) && (this.shotsFire < this.starThreshold.twoStar)){
-                if(gameState.starSystem.getLevel(5) < 2){
-                    gameState.starSystem.setStars(5, 2)
-                }
-            } else {
-                if(gameState.starSystem.getLevel(5) < 1){
-                    gameState.starSystem.setStars(5, 1)
-                }
-            }
-        this.shotsFire = 0
-            gameState.levelCompletion[5] = true
-            this.switchLevel('level6')
         }
         if(this.ONE.isDown) this.switchLevel('level1')
         if(this.TWO.isDown) this.switchLevel('level2')
@@ -258,9 +296,9 @@ export class Level5 extends Phaser.Scene {
         if(this.SEVEN.isDown) this.switchLevel('level7')
         if(this.EIGHT.isDown) this.switchLevel('level8')
         if(this.NINE.isDown) this.switchLevel('level9')
-        if(this.ZERO.isDown) this.scene.start('level10')
-        if(this.MINUS.isDown) this.scene.start('level11')
-        if(this.PLUS.isDown) this.scene.start('level12')
+        if(this.ZERO.isDown) this.switchLevel('level10')
+        if(this.MINUS.isDown) this.switchLevel('level11')
+        if(this.PLUS.isDown) this.switchLevel('level12')
 
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
             console.log("IM CALLED")
