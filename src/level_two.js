@@ -224,6 +224,7 @@ export class Level2 extends Phaser.Scene {
         this.coinGroup = new CoinGroup(this, coinPoints, this.coins, this.player, this.pickupAudio)
         this.coins = this.coinGroup.createCoins()
         this.coins.children.iterate((c) => { c.setTexture('coin') })
+        this.levelComleted = false
     }
 
 
@@ -258,7 +259,7 @@ export class Level2 extends Phaser.Scene {
         }
 
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
-            this.levelComleted = false
+
             if(!this.levelComleted){
                 if(this.coinGroup.numberOfCoinsCollected != 3){
                     if(gameState.starSystem.getLevel(2) < 1){

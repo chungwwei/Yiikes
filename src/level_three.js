@@ -179,6 +179,7 @@ export class Level3 extends Phaser.Scene {
         this.physics.add.overlap(this.LPath, this.player, () => {
             this.resetPlayer()
         })
+        this.levelComleted = false
     }
 
 
@@ -213,7 +214,7 @@ export class Level3 extends Phaser.Scene {
         }
 
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
-            this.levelComleted = false
+
             if(!this.levelComleted){
                 if(this.coinGroup.numberOfCoinsCollected != 7){
                     if(gameState.starSystem.getLevel(3) < 1){
@@ -238,7 +239,7 @@ export class Level3 extends Phaser.Scene {
                 gameState.levelCompletion[3] = true
                 this.levelComleted = true
                 this.menu = this.add.sprite(960/2, 960/2, 'menu');
-                this.choiceLabel = this.add.text(960/2 - 100, 960/2-200, 'Level 7 Completed!', { font: '30px Arial', fill: '#000' });
+                this.choiceLabel = this.add.text(960/2 - 100, 960/2-200, 'Level 3 Completed!', { font: '30px Arial', fill: '#000' });
                 if(gameState.starSystem.getLevel(3) == 3){
                     this.star1 = this.add.sprite(960/2 - 150, 400, 'star')
                     this.star2 = this.add.sprite(960/2, 400, 'star')

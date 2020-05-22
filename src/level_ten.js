@@ -169,7 +169,7 @@ export class Level10 extends Phaser.Scene {
         setUpEnemyTriggers(this, this.triggers, this.wallPoints, this.player, this.enemiesGroup)
         this.physics.add.overlap(this.enemiesGroup, this.player, () => { this.resetPlayer() })
         this.physics.add.overlap(this.follower, this.player, () => { this.resetPlayer() })  
-
+        this.levelComleted = false
     }
  
 
@@ -204,7 +204,7 @@ export class Level10 extends Phaser.Scene {
         }
 
         if (Phaser.Geom.Rectangle.Contains(this.endpoint, this.player.x, this.player.y)) {
-            this.levelComleted = false
+
             if(!this.levelComleted){
                 if(this.coinGroup.numberOfCoinsCollected != 8){
                     if(gameState.starSystem.getLevel(10) < 1){
